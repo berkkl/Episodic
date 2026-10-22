@@ -1,0 +1,26 @@
+{
+  "name": "episodic",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/prepare-assets.mjs && wrangler dev",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test worker/episodic-security.test.mjs worker/episodic-runtime.test.mjs",
+    "build": "npm run typecheck && node scripts/prepare-assets.mjs && wrangler deploy --dry-run --outdir .build",
+    "deploy": "npm run typecheck && node scripts/prepare-assets.mjs && wrangler deploy",
+    "catalog": "node --env-file-if-exists=.dev.vars scripts/episodic-catalog.mjs",
+    "check:public": "node scripts/check-public.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.133.0",
+    "zod": "4.6.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261022.1",
+    "esbuild": "0.28.1",
+    "miniflare": "4.20260706.0",
+    "typescript": "5.9.3",
+    "wrangler": "4.108.0"
+  }
+}

@@ -1,0 +1,1750 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Episodic</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky header with search, tabbed shelves below, full-width show pages with a blurred poster backdrop. Dark single theme, like a living room at night. */
+:root {
+  --bg: #121418;
+  --panel: #1b1e24;
+  --raised: #252932;
+  --line: #333844;
+  --fg: #e8e6e1;
+  --muted: #8d93a0;
+  --amber: #f2b33d;
+  --teal: #3cc2b4;
+  --rose: #ec6a7d;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z'/%3E%3C/svg%3E");
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--body); }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+img { max-width: 100%; display: block; }
+
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.bar { max-width: 1100px; margin: 0 auto; padding: 12px 20px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.logo { font: 800 22px/1 var(--display); letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+.logo i { display: inline-flex; gap: 3px; }
+.logo i b { width: 7px; height: 7px; border-radius: 50%; }
+.logo i b:nth-child(1) { background: var(--amber); }
+.logo i b:nth-child(2) { background: var(--teal); }
+.logo i b:nth-child(3) { background: var(--rose); }
+nav { display: flex; gap: 4px; flex-wrap: wrap; }
+nav a { padding: 6px 10px; border-radius: 6px; color: var(--muted); font-weight: 500; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; }
+nav a:hover { color: var(--fg); }
+nav a.on { color: var(--fg); background: var(--raised); }
+.search { margin-left: auto; flex: 1 1 220px; max-width: 320px; }
+.search input { width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; }
+.saved { font: 12px var(--mono); color: var(--muted); min-width: 52px; text-align: right; }
+
+main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 80px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 13px; font-family: var(--body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 16px; display: flex; justify-content: space-between; gap: 12px; }
+.section { display: grid; gap: 0; margin-bottom: 40px; }
+.empty { color: var(--muted); padding: 32px 0; max-width: 46ch; }
+.login { max-width: 340px; margin: 12vh auto 0; display: grid; gap: 12px; }
+.login h1 { font-size: 34px; font-weight: 800; }
+.login p { color: var(--muted); margin: 0; }
+.login input { width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+.login .err { color: var(--rose); font-size: 14px; min-height: 1.5em; }
+.years { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 28px; }
+.years a { flex: 0 0 auto; display: grid; gap: 2px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); min-width: 104px; }
+.years a b { font: 800 22px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.years a span { font: 12px var(--mono); color: var(--muted); }
+.years a.on { border-color: var(--teal); }
+.years a:hover { border-color: var(--muted); }
+.tabbtn { display: block; text-align: center; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px; color: var(--muted); font-weight: 500; }
+.tabbtn.on { color: var(--fg); border-color: var(--teal); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.chips a { padding: 6px 12px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.chips a.on { color: var(--bg); background: var(--amber); border-color: var(--amber); font-weight: 600; }
+#toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 50; background: var(--fg); color: var(--bg); padding: 10px 18px; border-radius: 8px; font-weight: 500; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 24px rgb(0 0 0 / 0.4); }
+.ask { max-width: 760px; display: grid; gap: 18px; min-width: 0; }
+.ask-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 32px; align-items: start; }
+.chats { position: sticky; top: 80px; display: grid; gap: 10px; max-height: calc(100vh - 100px); overflow-y: auto; }
+.chat-list { display: grid; gap: 2px; }
+.chat-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; border-radius: 6px; }
+.chat-item:hover, .chat-item.on { background: var(--panel); }
+.chat-item.on { box-shadow: inset 2px 0 0 var(--teal); }
+.chat-open { background: none; border: 0; text-align: left; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; color: inherit; }
+.chat-open span { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-open small { font: 11px var(--mono); color: var(--muted); }
+.chat-del { opacity: 0; font-size: 12px; }
+.chat-item:hover .chat-del, .chat-del:focus, .chat-del[data-armed] { opacity: 1; }
+@media (hover: none) { .chat-del { opacity: 1; } }
+@media (max-width: 720px) { .ask-layout { grid-template-columns: 1fr; gap: 16px; } .chats { position: static; max-height: 220px; order: 2; } }
+.ask-form { display: grid; gap: 10px; }
+.ask-form textarea { min-height: 70px; background: var(--panel); font-size: 15px; }
+.ask-turn.me { justify-self: end; background: var(--raised); padding: 10px 14px; border-radius: 12px 12px 2px 12px; max-width: 80%; white-space: pre-wrap; }
+.ask-reply { font-size: 16px; line-height: 1.55; }
+.ask-picks { display: grid; gap: 8px; margin-top: 12px; }
+.ask-pick { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 14px; padding: 10px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); align-items: start; }
+.ask-pick:hover { border-color: var(--teal); }
+.ask-pick .thumb { width: 54px; aspect-ratio: 2/3; border-radius: 4px; overflow: hidden; background: var(--raised); }
+.ask-pick .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.ask-pick .nm { font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.ask-pick .why { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.kind { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 4px; }
+.kind.continue { background: color-mix(in srgb, var(--teal) 20%, transparent); color: var(--teal); }
+.kind.new { background: color-mix(in srgb, var(--amber) 20%, transparent); color: var(--amber); }
+.kind.rewatch { background: color-mix(in srgb, var(--rose) 20%, transparent); color: var(--rose); }
+.thinking { color: var(--muted); font-style: normal; }
+.pwrap { position: relative; }
+.plink { display: block; background: none; border: 0; padding: 0; width: 100%; cursor: pointer; }
+.card a.t, .card button.t { display: block; background: none; border: 0; padding: 0; text-align: left; color: inherit; font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; width: 100%; }
+.qbar { position: absolute; left: 1px; right: 1px; bottom: 1px; padding: 26px 4px 8px; display: grid; gap: 6px; justify-items: center; background: linear-gradient(to bottom, transparent, rgb(10 11 14 / 0.92) 40%); border-radius: 0 0 6px 6px; opacity: 0; pointer-events: none; }
+.qbar .rlabel { display: none; }
+.qbar .stars-in .st { width: 17px; height: 17px; }
+.qbtns { display: flex; gap: 6px; }
+.qbtns button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgb(255 255 255 / 0.25); background: rgb(255 255 255 / 0.08); color: #e8e6e1; font-size: 14px; line-height: 1; display: grid; place-items: center; padding: 0; }
+.qbtns button:hover { border-color: #e8e6e1; }
+.qbtns [data-qa="watched"].on { background: var(--teal); border-color: var(--teal); color: var(--bg); }
+.qbtns [data-qa="like"].on { background: var(--rose); border-color: var(--rose); color: var(--bg); }
+.qbtns [data-qa="watchlist"].on { background: var(--amber); border-color: var(--amber); color: var(--bg); }
+.qmore { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: rgb(10 11 14 / 0.75); color: #e8e6e1; font-size: 16px; line-height: 1; padding: 0; display: none; place-items: center; }
+.qcard.busy .qbar { opacity: 0.6 !important; }
+.qcard:focus-within .qbar, .qcard.qopen .qbar { opacity: 1; pointer-events: auto; }
+@media (hover: hover) { .qcard:hover .qbar { opacity: 1; pointer-events: auto; } }
+@media (hover: none) { .qmore { display: grid; } }
+@media (prefers-reduced-motion: no-preference) { .qbar { transition: opacity .12s; } }
+.who { display: flex; gap: 4px; align-items: center; font: 13px var(--mono); color: var(--muted); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.tabs button { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px; color: var(--muted); font-weight: 500; }
+.tabs button.on { color: var(--fg); border-color: var(--teal); }
+.login .hint { font-size: 12px; color: var(--muted); }
+.drop { border: 1px dashed var(--line); border-radius: 10px; padding: 28px; display: grid; gap: 10px; justify-items: start; background: var(--panel); }
+.drop.over { border-color: var(--teal); }
+.steps { color: var(--muted); max-width: 64ch; margin: 0 0 20px; padding-left: 20px; }
+.steps li { margin-bottom: 4px; }
+.prog { height: 6px; background: var(--raised); border-radius: 3px; overflow: hidden; margin: 12px 0; }
+.prog i { display: block; height: 100%; background: var(--teal); width: 0; }
+.imp { display: grid; gap: 4px; }
+.imp-row { display: grid; grid-template-columns: 24px 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 6px 8px; border-radius: 6px; background: var(--panel); }
+.imp-row.off { opacity: 0.45; }
+.pick .poster { transition: none; }
+.pick.on .poster { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal); }
+.picked { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: var(--teal); color: var(--bg); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.imp-row .thumb { width: 34px; aspect-ratio: 2/3; border-radius: 3px; overflow: hidden; background: var(--raised); }
+.imp-row .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.imp-row .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.imp-row .nm span { color: var(--muted); font-weight: 400; }
+.imp-row .ss { font: 12px var(--mono); color: var(--muted); }
+.imp-row .ss b { color: var(--teal); font-weight: 500; }
+.imp-row select { padding: 4px 6px; font-size: 13px; }
+.imp-bar { position: sticky; bottom: 0; background: var(--bg); padding: 12px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--line); margin-top: 12px; }
+@media (max-width: 720px) { .imp-row { grid-template-columns: 24px 34px minmax(0, 1fr); } .imp-row > .row { grid-column: 3; } }
+.empty strong { color: var(--fg); display: block; font: 700 20px var(--display); margin-bottom: 6px; }
+
+/* poster grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px 14px; }
+.card { display: grid; gap: 6px; min-width: 0; }
+.poster { aspect-ratio: 2/3; border-radius: 6px; overflow: hidden; background: var(--raised); border: 1px solid var(--line); position: relative; max-width: 100%; }
+.poster img { width: 100%; height: 100%; object-fit: cover; }
+.poster .noimg { position: absolute; inset: 0; display: grid; place-items: center; padding: 10px; text-align: center; font: 700 15px var(--display); color: var(--muted); }
+.card:hover .poster { border-color: var(--teal); }
+.card .t { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card .m { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+
+.stars { color: var(--amber); letter-spacing: 1px; font-size: 13px; white-space: nowrap; }
+.heart { color: var(--rose); }
+
+/* diary */
+.month { display: grid; grid-template-columns: 64px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.month-label { font: 500 12px/1.2 var(--mono); text-transform: uppercase; color: var(--muted); padding-top: 6px; }
+.month-label b { display: block; font: 800 24px/1 var(--display); color: var(--fg); }
+.entries { display: grid; gap: 4px; min-width: 0; }
+.entry { display: grid; grid-template-columns: 34px 40px 1fr auto; gap: 14px; align-items: center; padding: 6px 8px; border-radius: 6px; }
+.entry:hover { background: var(--panel); }
+.entry .day { font: 500 18px var(--mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.entry .thumb { width: 40px; aspect-ratio: 2/3; border-radius: 3px; overflow: hidden; background: var(--raised); }
+.entry .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.entry .info { min-width: 0; }
+.entry .name { font-weight: 600; }
+.entry .name span { color: var(--muted); font-weight: 400; }
+.entry .note { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry .r { display: flex; gap: 8px; align-items: center; }
+.tag { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 4px; background: var(--raised); color: var(--muted); }
+
+/* show page */
+.hero { position: relative; margin: -28px -20px 28px; padding: 40px 20px 28px; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: -40px; background: var(--bgimg) center/cover; filter: blur(40px) saturate(1.3); opacity: 0.35; }
+.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, var(--bg)); }
+.hero-in { position: relative; z-index: 1; display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: start; }
+.hero h1 { font-size: clamp(30px, 5vw, 48px); line-height: 1.05; font-weight: 800; }
+.hero .sub { color: var(--muted); margin: 8px 0 14px; font-size: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+.summary { max-width: 62ch; color: #c9c7c1; }
+.genres { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+
+.cols { display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 16px; }
+.panel label.l { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: block; margin-bottom: 6px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.seg button { background: var(--raised); border: 1px solid transparent; border-radius: 6px; padding: 8px; font-size: 13px; font-weight: 500; color: var(--muted); }
+.seg button.on { color: var(--bg); background: var(--teal); }
+.seg button.on[data-s="dropped"] { background: var(--rose); }
+.seg button.on[data-s="watchlist"] { background: var(--amber); }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.btn { background: var(--raised); border: 1px solid var(--line); border-radius: 6px; padding: 8px 14px; font-weight: 500; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--teal); border-color: var(--teal); color: var(--bg); font-weight: 600; }
+.btn.ghost { background: none; border: none; padding: 4px 6px; color: var(--muted); font-size: 13px; }
+.btn.ghost:hover { color: var(--rose); }
+.likebtn { background: none; border: none; font-size: 24px; line-height: 1; color: var(--line); padding: 0; }
+.likebtn.on { color: var(--rose); }
+textarea, input[type=date], select { width: 100%; background: var(--raised); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+textarea { min-height: 90px; resize: vertical; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--muted); }
+
+.stars-in { display: inline-flex; gap: 2px; }
+.stars-in .st { width: 26px; height: 26px; position: relative; --fill: 0%; background: linear-gradient(90deg, var(--amber) var(--fill), var(--line) var(--fill)); -webkit-mask: var(--star) center/contain no-repeat; mask: var(--star) center/contain no-repeat; }
+.stars-in .st button { position: absolute; top: 0; bottom: 0; width: 50%; background: none; border: 0; padding: 0; }
+.stars-in .st button:first-child { left: 0; }
+.stars-in .st button:last-child { right: 0; }
+.stars-in.sm .st { width: 18px; height: 18px; }
+.rlabel { font: 500 13px var(--mono); color: var(--muted); min-width: 28px; }
+
+.seasons { display: grid; gap: 2px; }
+.season { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 6px; background: var(--panel); }
+.season .sn { font-weight: 600; }
+.season .sm { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.log-form { display: grid; gap: 12px; }
+.nextup { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 16px; padding: 10px 14px; background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line); border-radius: 10px; max-width: 62ch; }
+.nextup .k { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.nextup .ep { font-weight: 600; min-width: 0; }
+.nextup .ep code { font: 500 13px var(--mono); color: var(--teal); margin-right: 6px; }
+.season { cursor: pointer; }
+.season .bar { height: 3px; background: var(--raised); border-radius: 2px; overflow: hidden; margin-top: 6px; max-width: 220px; }
+.season .bar i { display: block; height: 100%; background: var(--teal); }
+.season .chev { color: var(--muted); font-size: 12px; margin-right: 6px; display: inline-block; }
+.season.open .chev { transform: rotate(90deg); }
+.eplist { display: grid; gap: 1px; margin: 2px 0 10px 0; }
+.ep-row { display: grid; grid-template-columns: 28px 40px minmax(0, 1fr) auto auto auto; gap: 10px; align-items: center; padding: 6px 12px; background: color-mix(in srgb, var(--panel) 60%, var(--bg)); }
+.ep-row .num { font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.ep-row .en { min-width: 0; }
+.ep-row .en div:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ep-row .en .sm { font: 11px var(--mono); color: var(--muted); }
+.ep-row.w .en div:first-child { color: var(--muted); }
+.ep-row.future { opacity: 0.45; }
+.ep-row .en .cm { font-size: 13px; color: var(--text); white-space: pre-wrap; margin-top: 2px; }
+.ep-row .cmb { padding: 4px 8px; }
+.ep-row .cmb.on { color: var(--teal); }
+.ep-edit { display: grid; gap: 6px; padding: 8px 12px 10px 90px; background: color-mix(in srgb, var(--panel) 60%, var(--bg)); }
+.ep-edit textarea { min-height: 60px; }
+.ep-edit .row { justify-content: flex-end; gap: 6px; }
+.sm { font-size: 13px; color: var(--muted); }
+.phead h1 { margin: 0; }
+.ulink { font-weight: 600; color: var(--text); text-decoration: none; }
+.ulink:hover { color: var(--teal); }
+.who-tag { color: var(--teal); font-weight: 600; }
+.frow { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.phead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.sub-h { font-size: 13px; font-weight: 600; color: var(--muted); margin: 20px 0 12px; }
+.card .m span + span { margin-left: 6px; }
+.fshow { display: grid; gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.fhead { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.fbody { font-size: 14px; white-space: pre-wrap; }
+.fep { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.fep code { font: 500 12px var(--mono); color: var(--teal); }
+.fep .fbody { flex-basis: 100%; color: var(--text); }
+.where { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+.where .k { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.where a.btn { text-decoration: none; }
+.where .sm { font-size: 12px; color: var(--muted); }
+.tick { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--line); background: none; padding: 0; display: grid; place-items: center; color: transparent; font-size: 13px; line-height: 1; }
+.tick:hover { border-color: var(--teal); }
+.tick.on { background: var(--teal); border-color: var(--teal); color: var(--bg); }
+.season-actions { display: flex; gap: 6px; justify-content: flex-end; padding: 6px 12px; background: color-mix(in srgb, var(--panel) 60%, var(--bg)); }
+.card .m code { font: 500 11px var(--mono); color: var(--teal); }
+@media (max-width: 720px) { .ep-row { grid-template-columns: 28px 30px minmax(0, 1fr) auto; } .ep-row > :nth-child(4), .ep-row > :nth-child(5) { grid-column: 3; justify-self: start; } .ep-row > :nth-child(6) { grid-column: 4; grid-row: 1; } .ep-edit { padding-left: 12px; } }
+.log-form .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* stats */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 36px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.tile .v { font: 800 32px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.tile .k { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.hist { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; align-items: end; height: 140px; }
+.hist div { display: grid; grid-template-rows: 1fr auto; gap: 6px; height: 100%; }
+.hist .b { align-self: end; background: var(--amber); border-radius: 3px 3px 0 0; min-height: 2px; position: relative; }
+.hist .b span { position: absolute; top: -18px; left: 0; right: 0; text-align: center; font: 11px var(--mono); color: var(--muted); }
+.hist .x { font: 11px var(--mono); color: var(--muted); text-align: center; }
+.bars { display: grid; gap: 8px; }
+.bars .br { display: grid; grid-template-columns: 120px 1fr 32px; gap: 10px; align-items: center; font-size: 13px; }
+.bars .track { height: 8px; background: var(--raised); border-radius: 4px; overflow: hidden; }
+.bars .track i { display: block; height: 100%; background: var(--teal); }
+.bars .n { font: 12px var(--mono); color: var(--muted); text-align: right; }
+
+.toolbar { display: flex; gap: 8px; align-items: center; }
+.toolbar select { width: auto; padding: 4px 8px; font-size: 13px; }
+
+@media (max-width: 720px) {
+  .hero-in, .cols { grid-template-columns: 1fr; }
+  .hero-in .poster { max-width: 160px; }
+  .search { max-width: none; margin-left: 0; }
+  .month { grid-template-columns: 1fr; gap: 6px; }
+  .entry { grid-template-columns: 26px 34px 1fr; }
+  .entry .r { grid-column: 3; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card .poster { transition: border-color .15s, transform .15s; }
+  .card:hover .poster { filter: brightness(1.06); }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <a class="logo" href="#/"><i><b></b><b></b><b></b></i>Episodic</a>
+    <nav id="nav">
+      <a href="#/" data-r="diary">Diary</a>
+      <a href="#/watching" data-r="watching">Watching</a>
+      <a href="#/watchlist" data-r="watchlist">Watchlist</a>
+      <a href="#/popular" data-r="shows">Shows</a>
+      <a href="#/stats" data-r="stats">Stats</a>
+      <a href="#/friends" data-r="friends">Friends</a>
+      <a href="#/ask" data-r="ask">Ask</a>
+      <a href="#/import" data-r="import">Import</a>
+    </nav>
+    <div class="search"><input id="q" type="search" placeholder="Search series…" autocomplete="off"></div>
+    <span class="saved" id="saved"></span>
+    <span class="who" id="who" hidden><span id="uname"></span><button class="btn ghost" id="logout">Sign out</button></span>
+  </div>
+</header>
+<main id="app"></main>
+
+<script>
+const API = "https://api.tvmaze.com";
+const STATUS = { watchlist: "Watchlist", watching: "Watching", completed: "Completed", dropped: "Dropped" };
+let db = { shows: {}, diary: [] };
+let loaded = false;
+let me = "";
+const DATA_URL = "/api/episodic/data";
+const cache = {};
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const today = () => new Date().toLocaleDateString("en-CA");
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const year = d => d ? d.slice(0, 4) : "";
+const stripTags = h => (h || "").replace(/<[^>]+>/g, "");
+const starText = r => r ? "★".repeat(Math.floor(r)) + (r % 1 ? "½" : "") : "";
+const years = s => { const a = year(s.premiered), b = year(s.ended); return a ? (b && b !== a ? `${a}–${b}` : (s.ended ? a : `${a}–`)) : ""; };
+
+// ---------- persistence ----------
+let saveTimer;
+function save() {
+  if (!loaded) return;
+  $("#saved").textContent = "saving…";
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(DATA_URL, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(db) });
+      if (r.status === 401) { $("#saved").textContent = "signed out"; return showLogin("Your session ended. Sign in again; your last change was not saved."); }
+      $("#saved").textContent = r.ok ? "saved" : "save failed";
+    } catch { $("#saved").textContent = "offline"; }
+  }, 400);
+}
+
+const where = {}; // show id -> JustWatch TR offers
+async function fetchShow(id) {
+  if (cache[id]) return cache[id];
+  const r = await fetch(`${API}/shows/${id}?embed[]=seasons&embed[]=episodes`);
+  if (!r.ok) throw new Error("TVmaze returned " + r.status);
+  return (cache[id] = await r.json());
+}
+
+function meta(s) {
+  return {
+    id: s.id, name: s.name, image: s.image?.medium || null, imageLg: s.image?.original || null,
+    premiered: s.premiered, ended: s.ended, network: s.network?.name || s.webChannel?.name || "",
+    genres: s.genres || [], runtime: s.averageRuntime || s.runtime || null, imdb: s.externals?.imdb || null,
+  };
+}
+function entry(show) {
+  const id = String(show.id);
+  if (!db.shows[id]) db.shows[id] = { ...meta(show), status: null, rating: null, liked: false, review: "", seasons: {}, addedAt: new Date().toISOString() };
+  else Object.assign(db.shows[id], meta(show));
+  return db.shows[id];
+}
+// Two entries are duplicates when everything but the id matches.
+const diaryKey = d => [d.showId, d.season ?? "", d.date, d.rating ?? "", (d.review || "").trim(), !!d.rewatch].join("|");
+let toastTimer;
+function toast(msg) {
+  let t = $("#toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.hidden = true, 3500);
+}
+function touch(e) { e.updatedAt = new Date().toISOString(); save(); }
+
+// ---------- episodes ----------
+// e.eps[episodeId] = { w: "YYYY-MM-DD" | 1 (watched, date unknown) | null, r: rating | null,
+//   c: comment, d: date first rated or commented, s/n/t: season, number, title (so the diary can show it) }
+const airedEps = show => (show._embedded?.episodes || []).filter(ep => ep.number && ep.season && (!ep.airdate || ep.airdate <= today()));
+const watched = (e, ep) => !!e?.eps?.[ep.id]?.w;
+const epCode = (s, n) => `S${s} E${n}`;
+function updateCursor(x, show) {
+  const aired = airedEps(show);
+  if (!aired.length) return;
+  let last = -1;
+  aired.forEach((ep, i) => { if (watched(x, ep)) last = i; });
+  const nxt = aired.slice(last + 1).find(ep => !watched(x, ep));
+  x.next = nxt ? { s: nxt.season, n: nxt.number, name: nxt.name, id: nxt.id } : { done: true };
+  x.epCount = { w: aired.filter(ep => watched(x, ep)).length, t: aired.length };
+}
+function stampEp(rec, ep) { rec.s = ep.season; rec.n = ep.number; rec.t = ep.name; rec.d ||= today(); }
+// Rated or commented episodes show up in the diary next to logged seasons.
+function epEntries(doc = db) {
+  const out = [];
+  for (const [sid, sh] of Object.entries(doc.shows)) for (const [eid, r] of Object.entries(sh.eps || {})) {
+    if (!r.r && !r.c) continue;
+    const date = typeof r.w === "string" ? r.w : r.d;
+    if (date) out.push({ id: "ep" + eid, showId: sid, date, ep: r, rating: r.r || null, review: r.c || "" });
+  }
+  return out;
+}
+const epLabel = r => r.s ? `${epCode(r.s, r.n)}${r.t ? " · " + r.t : ""}` : "Episode";
+function setWatched(x, show, eps, on, date = today()) {
+  x.eps ||= {};
+  for (const ep of eps) {
+    const rec = x.eps[ep.id] ||= { w: null, r: null };
+    if (on) { if (!rec.w) rec.w = date; } else { rec.w = null; if (!rec.r && !rec.c) delete x.eps[ep.id]; }
+  }
+  updateCursor(x, show);
+  if (on && (!x.status || x.status === "watchlist" || x.status === "dropped")) x.status = "watching";
+  if (on && x.next?.done && show.status === "Ended") x.status = "completed";
+  touch(x);
+}
+
+// ---------- components ----------
+function posterHTML(s) {
+  return `<div class="poster">${s.image ? `<img src="${esc(s.image)}" alt="" loading="lazy">` : `<div class="noimg">${esc(s.name)}</div>`}</div>`;
+}
+const metaById = {};
+const mLine = (s, e) => `${e?.status === "watching" && e.next ? (e.next.done ? "<span>up to date</span>" : `<code>${epCode(e.next.s, e.next.n)}</code><span>next</span>`) : e?.rating ? `<span class="stars">${starText(e.rating)}</span>` : `<span>${years(s)}</span>`}${e?.liked ? '<span class="heart">♥</span>' : ""}`;
+function cardHTML(s) {
+  metaById[s.id] = s;
+  return `<div class="card qcard" data-sid="${s.id}"><div class="pwrap"><a href="#/show/${s.id}" class="plink" tabindex="-1" aria-hidden="true">${posterHTML(s)}</a>${quickBar()}</div>
+    <a href="#/show/${s.id}" class="t" title="${esc(s.name)}">${esc(s.name)}</a><div class="m">${mLine(s, db.shows[s.id])}</div></div>`;
+}
+
+// ---------- quick log on posters (hover, or the ⋯ button on touch screens) ----------
+const quickBar = () => `<div class="qbar" role="group" aria-label="Quick log"><div class="qstars"></div><div class="qbtns">
+  <button type="button" data-qa="watched" title="Log as watched today" aria-label="Log as watched today">✓</button>
+  <button type="button" data-qa="like" title="Like" aria-label="Like">♥</button>
+  <button type="button" data-qa="watchlist" title="Watchlist" aria-label="Watchlist">+</button></div></div>
+  <button type="button" class="qmore" aria-label="Quick log">⋯</button>`;
+
+// The library entry a card points at, if any. Popular cards carry TMDB ids, so match by name.
+function cardEntry(card) {
+  if (card.dataset.sid) return db.shows[card.dataset.sid] || null;
+  const hit = Object.entries(db.shows).find(([, x]) => normTitle(x.name) === normTitle(card.dataset.name || ""));
+  if (hit) card.dataset.sid = hit[0];
+  return hit ? hit[1] : null;
+}
+
+async function quickEntry(card) {
+  const have = cardEntry(card);
+  if (have) return have;
+  let id = card.dataset.sid;
+  if (!id && card.dataset.tmdb) {
+    const x = popular?.lists.flatMap(l => l.shows).find(z => z.id === +card.dataset.tmdb);
+    card.classList.add("busy");
+    id = x && await resolveTv(x);
+    card.classList.remove("busy");
+    if (!id) { toast("Could not find this show on TVmaze."); return null; }
+    card.dataset.sid = id;
+    if (db.shows[id]) return db.shows[id];
+  }
+  let m = metaById[id];
+  if (!m) {
+    const show = await tvGet(`/shows/${id}`);
+    if (!show) { toast("Could not load this show. Try again."); return null; }
+    m = meta(show);
+  }
+  db.shows[id] = { ...m, status: null, rating: null, liked: false, review: "", seasons: {}, addedAt: new Date().toISOString() };
+  return db.shows[id];
+}
+
+function paintQuick(card) {
+  const e = cardEntry(card);
+  const set = (k, on) => $(`[data-qa="${k}"]`, card)?.classList.toggle("on", !!on);
+  set("watched", e?.status === "completed");
+  set("like", e?.liked);
+  set("watchlist", e?.status === "watchlist");
+  const m = $(".m", card);
+  if (!m) return;
+  if (card.dataset.tmdb) { if (e && !$(".tag", m)) m.insertAdjacentHTML("beforeend", '<span class="tag">in library</span>'); }
+  else m.innerHTML = mLine(metaById[card.dataset.sid] || e || {}, e);
+}
+
+function mountQuick(card) {
+  if (!card || card.dataset.mounted) return;
+  card.dataset.mounted = 1;
+  $(".qstars", card).appendChild(starInput(cardEntry(card)?.rating, async v => {
+    const e = await quickEntry(card);
+    if (!e) return;
+    e.rating = v; e.ratedAt = new Date().toISOString();
+    touch(e);
+    paintQuick(card);
+    toast(v ? `Rated ${e.name} ${starText(v)}` : `Removed your rating for ${e.name}.`);
+  }, true));
+  paintQuick(card);
+}
+
+async function quickAction(card, action) {
+  const e = await quickEntry(card);
+  if (!e) return;
+  const id = card.dataset.sid;
+  if (action === "like") {
+    e.liked = !e.liked;
+    toast(e.liked ? `Liked ${e.name}.` : `Removed ${e.name} from likes.`);
+  } else if (action === "watchlist") {
+    if (e.status && e.status !== "watchlist") { toast(`${e.name} is already marked ${STATUS[e.status]}.`); return; }
+    e.status = e.status === "watchlist" ? null : "watchlist";
+    toast(e.status ? `Added ${e.name} to your watchlist.` : `Removed ${e.name} from your watchlist.`);
+  } else if (action === "watched") {
+    const item = { id: uid(), showId: String(id), date: today(), season: null, rating: e.rating || null, review: "", rewatch: false };
+    if (db.diary.some(d => diaryKey(d) === diaryKey(item))) { toast(`${e.name} is already in today's diary.`); return; }
+    db.diary.push(item);
+    e.status = "completed";
+    toast(`Logged ${e.name} as watched today.`);
+  }
+  touch(e);
+  paintQuick(card);
+}
+
+document.addEventListener("pointerover", ev => mountQuick(ev.target.closest?.(".qcard")));
+document.addEventListener("focusin", ev => mountQuick(ev.target.closest?.(".qcard")));
+document.addEventListener("click", ev => {
+  const more = ev.target.closest?.(".qmore");
+  if (more) {
+    ev.preventDefault();
+    const card = more.closest(".qcard");
+    document.querySelectorAll(".qcard.qopen").forEach(o => o !== card && o.classList.remove("qopen"));
+    mountQuick(card);
+    card.classList.toggle("qopen");
+    return;
+  }
+  const b = ev.target.closest?.(".qbar button[data-qa]");
+  if (b) { ev.preventDefault(); quickAction(b.closest(".qcard"), b.dataset.qa); return; }
+  if (!ev.target.closest?.(".qcard")) document.querySelectorAll(".qcard.qopen").forEach(o => o.classList.remove("qopen"));
+});
+function starInput(value, onChange, small) {
+  let cur = value || null;
+  const w = document.createElement("div");
+  w.className = "stars-in" + (small ? " sm" : "");
+  const label = document.createElement("span");
+  label.className = "rlabel";
+  const paint = v => { [...w.children].forEach((s, i) => s.style.setProperty("--fill", Math.max(0, Math.min(1, (v || 0) - i)) * 100 + "%")); label.textContent = v ? v.toFixed(1) : "–"; };
+  for (let i = 0; i < 5; i++) {
+    const st = document.createElement("span");
+    st.className = "st";
+    for (const v of [i + 0.5, i + 1]) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-label", `${v} stars`);
+      b.onmouseenter = () => paint(v);
+      b.onclick = () => { cur = cur === v ? null : v; paint(cur); onChange(cur); };
+      st.appendChild(b);
+    }
+    w.appendChild(st);
+  }
+  w.onmouseleave = () => paint(cur);
+  paint(cur);
+  const box = document.createElement("span");
+  box.className = "row";
+  box.style.gap = "8px";
+  box.append(w, label);
+  return box;
+}
+
+// ---------- views ----------
+// Per year: distinct series with any activity (a diary entry, a dated episode watch, or an imported season).
+function yearSummary() {
+  const ys = {};
+  const at = y => ys[y] ||= { year: y, shows: new Set(), eps: 0, seasons: 0 };
+  db.diary.forEach(d => { const y = at(d.date.slice(0, 4)); y.shows.add(String(d.showId)); y.seasons++; });
+  Object.entries(db.shows).forEach(([id, sh]) => {
+    Object.values(sh.eps || {}).forEach(r => { if (typeof r.w === "string") { const y = at(r.w.slice(0, 4)); y.shows.add(id); y.eps++; } });
+    Object.values(sh.progress || {}).forEach(p => { if (p.last) at(p.last.slice(0, 4)).shows.add(id); });
+  });
+  return Object.values(ys).filter(y => /^\d{4}$/.test(y.year)).sort((a, b) => b.year.localeCompare(a.year)).map(y => ({ ...y, series: y.shows.size }));
+}
+
+const views = {
+  diary(yr) {
+    const ysum = yearSummary();
+    let list = [...db.diary, ...epEntries()].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+    if (yr) list = list.filter(d => d.date.startsWith(yr));
+    const strip = ysum.length ? `<div class="years"><a href="#/" class="${yr ? "" : "on"}"><b>All</b><span>${Object.keys(db.shows).length} series</span></a>${ysum.map(y =>
+      `<a href="#/year/${y.year}" class="${yr === y.year ? "on" : ""}"><b>${y.year}</b><span>${y.series} series</span><span>${y.eps ? y.eps + " episodes" : y.seasons + " seasons"}</span></a>`).join("")}</div>` : "";
+    if (!list.length && yr) return strip + `<div class="empty">No diary entries in ${esc(yr)}. Episode watches count toward the totals above but only finished seasons appear in the diary.</div>`;
+    if (!list.length) return `<div class="empty"><strong>Your diary is empty</strong>Search for a series above, open it, and use "Log a watch" to record when you finished a season or the whole show.</div>`;
+    list = list.map(d => db.shows[d.showId]?.private ? { ...d, private: true } : d);
+    return strip + `<h2><span>Diary${yr ? " · " + esc(yr) : ""}</span><span>${list.length} entries</span></h2>` + monthsHTML(list, db.shows);
+  },
+  shelf(status) {
+    const list = Object.values(db.shows).filter(s => s.status === status).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+    const msg = status === "watching" ? "Nothing in progress. Mark a show as Watching from its page." : "Your watchlist is empty. Add shows you want to start from their page.";
+    return `<h2><span>${STATUS[status]}</span><span>${list.length}</span></h2>` + (list.length ? `<div class="grid">${list.map(cardHTML).join("")}</div>` : `<div class="empty">${msg}</div>`);
+  },
+  watching() { return views.shelf("watching"); },
+  watchlist() { return views.shelf("watchlist"); },
+  shows() {
+    const sort = sessionStorage.getItem("sort") || "rating";
+    const filt = sessionStorage.getItem("filt") || "all";
+    let list = Object.values(db.shows).filter(s => s.rating || s.status || s.liked || s.progress);
+    if (filt !== "all") list = list.filter(s => filt === "liked" ? s.liked : s.status === filt);
+    const by = { rating: (a, b) => (b.rating || 0) - (a.rating || 0), name: (a, b) => a.name.localeCompare(b.name), recent: (a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""), year: (a, b) => (b.premiered || "").localeCompare(a.premiered || "") };
+    list.sort(by[sort]);
+    const opt = (o, v) => Object.entries(o).map(([k, l]) => `<option value="${k}"${k === v ? " selected" : ""}>${l}</option>`).join("");
+    return showTabs("mine") + `<h2><span>My shows · ${list.length}</span><span class="toolbar">
+      <select id="filt">${opt({ all: "All", liked: "Liked", ...STATUS }, filt)}</select>
+      <select id="sort">${opt({ rating: "Highest rated", recent: "Recently updated", name: "A–Z", year: "Release year" }, sort)}</select></span></h2>`
+      + (list.length ? `<div class="grid">${list.map(cardHTML).join("")}</div>` : `<div class="empty">No shows here yet.</div>`);
+  },
+  stats() {
+    const shows = Object.values(db.shows);
+    const rated = shows.filter(s => s.rating);
+    const avg = rated.length ? (rated.reduce((a, s) => a + s.rating, 0) / rated.length).toFixed(2) : "–";
+    const y = String(new Date().getFullYear());
+    const thisYear = db.diary.filter(d => d.date.startsWith(y));
+    const completed = shows.filter(s => s.status === "completed").length;
+    const hist = Array.from({ length: 10 }, (_, i) => rated.filter(s => s.rating === (i + 1) / 2).length);
+    const hmax = Math.max(1, ...hist);
+    const genres = {};
+    shows.filter(s => s.status && s.status !== "watchlist").forEach(s => s.genres.forEach(g => genres[g] = (genres[g] || 0) + 1));
+    const gtop = Object.entries(genres).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const net = {};
+    shows.filter(s => s.network && s.status && s.status !== "watchlist").forEach(s => net[s.network] = (net[s.network] || 0) + 1);
+    const ntop = Object.entries(net).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const bars = arr => arr.length ? `<div class="bars">${arr.map(([k, n]) => `<div class="br"><span>${esc(k)}</span><span class="track"><i style="width:${n / Math.max(...arr.map(a => a[1])) * 100}%"></i></span><span class="n">${n}</span></div>`).join("")}</div>` : `<div class="empty">Not enough data yet.</div>`;
+    return `<div class="tiles">
+      <div class="tile"><div class="v">${completed}</div><div class="k">Series completed</div></div>
+      <div class="tile"><div class="v">${thisYear.length}</div><div class="k">Diary entries in ${y}</div></div>
+      <div class="tile"><div class="v">${shows.reduce((a, s) => a + Object.values(s.eps || {}).filter(r => r.w).length, 0)}</div><div class="k">Episodes watched</div></div>
+      <div class="tile"><div class="v">${avg}</div><div class="k">Average rating</div></div>
+    </div>
+    <div class="section"><h2><span>Ratings</span><span>${rated.length} rated</span></h2>
+      <div class="hist">${hist.map((n, i) => `<div><span class="b" style="height:${n / hmax * 100}%">${n ? `<span>${n}</span>` : ""}</span><span class="x">${((i + 1) / 2).toString().replace(".5", "½")}</span></div>`).join("")}</div></div>
+    <div class="cols" style="grid-template-columns:1fr 1fr">
+      <div class="section"><h2><span>Top genres</span></h2>${bars(gtop)}</div>
+      <div class="section"><h2><span>Networks</span></h2>${bars(ntop)}</div>
+    </div>`;
+  },
+};
+
+const showTabs = cur => `<div class="tabs" style="max-width:320px;margin-bottom:20px"><a class="tabbtn ${cur === "popular" ? "on" : ""}" href="#/popular">Popular</a><a class="tabbtn ${cur === "mine" ? "on" : ""}" href="#/shows">My shows</a></div>`;
+
+// Catalog entries carry TMDB ids; TVmaze is found by TVDB id, then IMDb id, then name.
+async function resolveTv(x) {
+  const hit = (x.tvdb && await tvGet(`/lookup/shows?thetvdb=${x.tvdb}`)) || (x.imdb && await tvGet(`/lookup/shows?imdb=${x.imdb}`)) || await tvGet(`/singlesearch/shows?q=${encodeURIComponent(x.n)}`);
+  return hit?.id || null;
+}
+
+let popular = null;
+async function popularView(key) {
+  const app = $("#app");
+  app.innerHTML = showTabs("popular") + `<div class="empty">Loading…</div>`;
+  if (!popular) {
+    try { const r = await fetch("catalog/popular.json"); if (!r.ok) throw 0; popular = await r.json(); }
+    catch { app.innerHTML = showTabs("popular") + `<div class="empty"><strong>Could not load popular series</strong>Reload the page to try again.</div>`; return; }
+  }
+  const list = popular.lists.find(l => l.key === key) || popular.lists[0];
+  const mine = new Set(Object.values(db.shows).filter(x => x.status || x.rating || x.progress || x.eps).map(x => normTitle(x.name)));
+  app.innerHTML = showTabs("popular") + `
+    <div class="chips">${popular.lists.map(l => `<a href="#/popular/${l.key}" class="${l === list ? "on" : ""}">${esc(l.name)}</a>`).join("")}</div>
+    <h2><span>${esc(list.name)}</span><span>updated ${esc(popular.updated)}</span></h2>
+    <div class="grid">${list.shows.map(x => `<div class="card qcard" data-tmdb="${x.id}" data-name="${esc(x.n)}"><div class="pwrap">
+      <button type="button" class="plink pop-open" tabindex="-1" aria-hidden="true"><div class="poster">${x.p ? `<img src="https://image.tmdb.org/t/p/w185${esc(x.p)}" alt="" loading="lazy">` : `<div class="noimg">${esc(x.n)}</div>`}</div></button>${quickBar()}</div>
+      <button type="button" class="t pop-open" title="${esc(x.n)}">${esc(x.n)}</button><div class="m"><span>${esc(x.y || "")}</span>${mine.has(normTitle(x.n)) ? '<span class="tag">in library</span>' : ""}</div></div>`).join("")}</div>
+    <p style="color:var(--muted);font-size:12px;margin-top:24px">Popularity from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>`;
+  app.querySelectorAll(".pop-open").forEach(b => b.onclick = async () => {
+    const card = b.closest(".qcard");
+    const t = $(".t", card);
+    if (card.dataset.sid) { location.hash = "#/show/" + card.dataset.sid; return; }
+    t.textContent = "Opening…";
+    const id = await resolveTv(list.shows.find(z => z.id === +card.dataset.tmdb));
+    if (id) location.hash = "#/show/" + id;
+    else t.textContent = "Not on TVmaze";
+  });
+}
+
+// ---------- Ask (Claude Haiku via the Worker) ----------
+// db.chats keeps past conversations, newest first: { id, title, at, turns, answers }.
+// answers[i] holds the rendered answer for the assistant turn at turns[i].
+const ask = { id: null, turns: [], answers: [], busy: false, left: null };
+const MAX_CHATS = 50;
+function openChat(id) {
+  const c = (db.chats || []).find(x => x.id === id);
+  if (!c) return;
+  Object.assign(ask, { id: c.id, turns: [...c.turns], answers: [...c.answers] });
+  askView();
+}
+function newChat() { Object.assign(ask, { id: null, turns: [], answers: [] }); askView(); }
+function storeChat() {
+  db.chats ||= [];
+  let c = db.chats.find(x => x.id === ask.id);
+  if (!c) {
+    c = { id: ask.id = uid(), title: ask.turns[0].content.slice(0, 80), at: new Date().toISOString() };
+    db.chats.unshift(c);
+  } else {
+    db.chats = [c, ...db.chats.filter(x => x !== c)];
+  }
+  Object.assign(c, { turns: [...ask.turns], answers: [...ask.answers], updatedAt: new Date().toISOString() });
+  db.chats = db.chats.slice(0, MAX_CHATS);
+  save();
+}
+const ASK_STARTERS = [
+  "I'm sick and bored. Suggest something easy to binge.",
+  "What should I continue from where I left off?",
+  "Something short I can finish this weekend.",
+  "More like the shows I rated highest.",
+];
+
+function chatListHTML() {
+  const chats = db.chats || [];
+  if (!chats.length) return `<p class="hint" style="color:var(--muted);font-size:13px;margin:0">Your conversations are saved here.</p>`;
+  return chats.map(c => `<div class="chat-item${c.id === ask.id ? " on" : ""}" data-chat="${c.id}">
+    <button type="button" class="chat-open" data-chat="${c.id}"><span>${esc(c.title)}</span><small>${new Date(c.updatedAt || c.at).toLocaleDateString("en", { day: "numeric", month: "short" })} · ${c.turns.filter(t => t.role === "user").length} ${c.turns.filter(t => t.role === "user").length === 1 ? "question" : "questions"}</small></button>
+    <button type="button" class="btn ghost chat-del" data-chat="${c.id}" aria-label="Delete conversation">✕</button></div>`).join("");
+}
+
+function askView() {
+  const app = $("#app");
+  app.innerHTML = `<div class="ask-layout"><aside class="chats"><div class="row" style="justify-content:space-between"><span class="l" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">History</span><button type="button" class="btn ghost" id="asknew2">New</button></div>
+    <div class="chat-list">${chatListHTML()}</div></aside><div class="ask">
+    <h2><span>Ask for a recommendation</span><span id="askleft">${ask.left != null ? ask.left + " questions left today" : ""}</span></h2>
+    ${ask.turns.length ? "" : `<p style="color:var(--muted);margin:0">Suggestions are based on your diary, ratings, reviews and where you left off. Write in any language.</p>
+      <div class="chips">${ASK_STARTERS.map((q, i) => `<a href="#/ask" data-q="${i}">${esc(q)}</a>`).join("")}</div>`}
+    <div id="askthread" style="display:grid;gap:18px"></div>
+    <form class="ask-form" id="askf"><textarea id="askq" placeholder="${ask.turns.length ? "Ask a follow-up" : "What are you in the mood for?"}" maxlength="2000"></textarea>
+      <div class="row"><button class="btn primary" type="submit" id="asksend">Ask</button>${ask.turns.length ? `<button class="btn ghost" type="button" id="asknew">New conversation</button>` : ""}<span id="askerr" style="color:var(--rose);font-size:14px"></span></div></form>
+    <p style="color:var(--muted);font-size:12px;margin:0">Answers come from Claude Haiku and can be wrong about details. IMDb ratings marked ~ are Claude's estimates; the rest come from IMDb. Popular shows, plots and platforms come from TMDB and JustWatch.</p></div></div>`;
+  renderThread();
+  app.querySelectorAll("[data-q]").forEach(a => a.onclick = ev => { ev.preventDefault(); sendAsk(ASK_STARTERS[+a.dataset.q]); });
+  $("#askf").onsubmit = ev => { ev.preventDefault(); sendAsk($("#askq").value); };
+  $("#askq").onkeydown = ev => { if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) { ev.preventDefault(); sendAsk($("#askq").value); } };
+  const nw = $("#asknew");
+  if (nw) nw.onclick = newChat;
+  $("#asknew2").onclick = newChat;
+  app.querySelectorAll(".chat-open").forEach(b => b.onclick = () => { if (!ask.busy) openChat(b.dataset.chat); });
+  app.querySelectorAll(".chat-del").forEach(b => b.onclick = () => {
+    if (!b.dataset.armed) { b.dataset.armed = 1; b.textContent = "Delete?"; b.style.color = "var(--rose)"; setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = "✕"; b.style.color = ""; } }, 3000); return; }
+    db.chats = (db.chats || []).filter(c => c.id !== b.dataset.chat);
+    save();
+    if (ask.id === b.dataset.chat) newChat(); else askView();
+  });
+  const th = $("#askthread");
+  if (ask.turns.length) th.lastElementChild?.scrollIntoView({ block: "nearest" });
+}
+
+function renderThread() {
+  const th = $("#askthread");
+  if (!th) return;
+  th.innerHTML = "";
+  ask.turns.forEach((t, i) => {
+    if (t.role === "user") { th.insertAdjacentHTML("beforeend", `<div class="ask-turn me">${esc(t.content)}</div>`); return; }
+    const a = ask.answers[i];
+    const box = document.createElement("div");
+    box.innerHTML = `<div class="ask-reply">${esc(a.reply)}</div><div class="ask-picks"></div>`;
+    const list = $(".ask-picks", box);
+    a.picks.forEach(p => {
+      const el = document.createElement("a");
+      el.className = "ask-pick";
+      el.href = p.href || "#/ask";
+      el.innerHTML = `<span class="thumb">${p.image ? `<img src="${esc(p.image)}" alt="" loading="lazy">` : ""}</span>
+        <span style="min-width:0"><div class="nm">${esc(p.title)}${p.year ? ` <span style="color:var(--muted);font-weight:400">${esc(p.year)}</span>` : ""}<span class="kind ${p.kind}">${p.kind}</span>${p.imdbRating ? `<span class="tag">IMDb ${esc(p.imdbRating)}</span>` : p.imdb ? `<span class="tag" title="Claude's estimate of the IMDb rating">IMDb ~${esc(p.imdb)}</span>` : ""}${p.where ? `<span class="tag">${esc(p.where)}</span>` : ""}</div>
+        <div class="why">${esc(p.why)}</div></span>`;
+      if (!p.href) el.onclick = ev => ev.preventDefault();
+      list.appendChild(el);
+    });
+    th.appendChild(box);
+  });
+  if (ask.busy) th.insertAdjacentHTML("beforeend", `<div class="thinking">Looking through your diary…</div>`);
+}
+
+async function platformsFor(title) {
+  const where = [];
+  for (const key of Object.keys(PLATFORMS)) {
+    try { const c = await loadCatalog(key); if (c.shows.some(x => normTitle(x.n) === normTitle(title) || (x.o && normTitle(x.o) === normTitle(title)))) where.push(PLATFORMS[key]); } catch {}
+  }
+  return where;
+}
+
+// Picks from the reference list arrive with real IMDb rating, platforms, poster and ids.
+async function enrichPick(p) {
+  const where = (p.platforms || await platformsFor(p.title)).join(", ");
+  const base = { ...p, where, image: p.poster ? `https://image.tmdb.org/t/p/w185${p.poster}` : null };
+  const mine = Object.entries(db.shows).find(([, s]) => normTitle(s.name) === normTitle(p.title));
+  if (mine) return { ...base, href: "#/show/" + mine[0], image: mine[1].image || base.image };
+  let id = (p.tvdb || p.imdbId) ? await resolveTv({ tvdb: p.tvdb, imdb: p.imdbId, n: p.title }) : null;
+  let image = base.image;
+  if (!id) {
+    const res = (await tvGet(`/search/shows?q=${encodeURIComponent(p.title)}`)) || [];
+    const hit = res.find(r => p.year && r.show.premiered?.startsWith(p.year)) || res[0];
+    id = hit?.show.id;
+    image ||= hit?.show.image?.medium;
+  }
+  return { ...base, image, href: id ? "#/show/" + id : null };
+}
+
+async function sendAsk(text) {
+  text = (text || "").trim();
+  if (!text || ask.busy) return;
+  ask.turns.push({ role: "user", content: text });
+  ask.busy = true;
+  askView();
+  let r, body = {};
+  try {
+    r = await fetch("/api/episodic/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: ask.turns.slice(-6).map(t => ({ role: t.role, content: t.content.slice(0, 2000) })) }) });
+    body = await r.json().catch(() => ({}));
+  } catch { r = null; }
+  if (!r || !r.ok) {
+    ask.turns.pop();
+    ask.busy = false;
+    if (r?.status === 401) return showLogin("Your session ended. Sign in again.");
+    askView();
+    $("#askq").value = text;
+    $("#askerr").textContent = !r ? "Could not reach the server. Check your connection." : {
+      quota: `You reached today's limit of ${body.limit} questions. It resets tomorrow.`,
+      global_quota: "Recommendations reached their daily limit. Please try tomorrow.",
+      rate: "Please wait a minute before asking again.",
+      too_large: "This message is too long. Please shorten it.",
+      unconfigured: "Recommendations are not set up yet.",
+      refusal: "Claude declined this one. Try asking another way.",
+      busy: "Claude is busy right now. Try again in a minute.",
+    }[body.error] || "Something went wrong. Try again.";
+    return;
+  }
+  const picks = await Promise.all((body.picks || []).map(enrichPick));
+  ask.left = body.left;
+  // The assistant turn sent back as history is the plain answer, so follow-ups know what was suggested.
+  ask.turns.push({ role: "assistant", content: `${body.reply}\n${(body.picks || []).map(p => `- ${p.title} (${p.kind}): ${p.why}`).join("\n")}` });
+  ask.answers[ask.turns.length - 1] = { reply: body.reply, picks };
+  ask.busy = false;
+  storeChat();
+  if (location.hash.startsWith("#/ask")) askView();
+}
+
+async function searchView(q) {
+  const app = $("#app");
+  app.innerHTML = `<h2><span>Results for “${esc(q)}”</span></h2><div class="empty">Searching…</div>`;
+  try {
+    const r = await fetch(`${API}/search/shows?q=${encodeURIComponent(q)}`);
+    const res = await r.json();
+    if (location.hash !== "#/search/" + encodeURIComponent(q)) return;
+    const list = res.map(x => meta(x.show));
+    app.innerHTML = `<h2><span>Results for “${esc(q)}”</span><span>${list.length}</span></h2>` + (list.length ? `<div class="grid">${list.map(cardHTML).join("")}</div>` : `<div class="empty">No series matched that name. Try the original title.</div>`);
+  } catch {
+    app.innerHTML = `<div class="empty"><strong>Search failed</strong>Could not reach TVmaze. Check your internet connection and try again.</div>`;
+  }
+}
+
+async function showView(id) {
+  const app = $("#app");
+  const known = db.shows[id];
+  app.innerHTML = `<div class="empty">${known ? esc(known.name) : "Loading"}…</div>`;
+  let s;
+  try { s = await fetchShow(id); }
+  catch { app.innerHTML = `<div class="empty"><strong>Could not load this show</strong>TVmaze did not respond. Check your connection and reload.</div>`; return; }
+  if (location.hash !== "#/show/" + id) return;
+  const m = meta(s);
+  const e = db.shows[id];
+  const seasons = (s._embedded?.seasons || []).filter(x => x.number);
+  const logs = db.diary.filter(d => d.showId === String(id)).sort((a, b) => b.date.localeCompare(a.date));
+
+  app.innerHTML = `
+    <div class="hero" style="--bgimg:url('${esc(m.imageLg || m.image || "")}')"><div class="hero-in">
+      ${posterHTML(m)}
+      <div style="min-width:0">
+        <h1>${esc(m.name)}</h1>
+        <div class="sub">${[years(m), m.network, seasons.length ? seasons.length + (seasons.length > 1 ? " seasons" : " season") : "", m.runtime ? m.runtime + " min episodes" : "", s.rating?.average ? "TVmaze " + s.rating.average + "/10" : ""].filter(Boolean).map(esc).join("<span>·</span>")}</div>
+        <div class="summary">${esc(stripTags(s.summary))}</div>
+        <div class="genres">${m.genres.map(g => `<span class="tag">${esc(g)}</span>`).join("")}</div>
+        <div id="where"></div>
+        <div id="nextup"></div>
+      </div></div></div>
+    <div class="cols">
+      <aside class="panel" id="side"></aside>
+      <div style="min-width:0">
+        <div class="section"><h2><span>Seasons</span><span id="epsum"></span></h2><div class="seasons" id="seasons"></div></div>
+        <div class="section"><h2><span>Your log</span><span>${logs.length}</span></h2><div id="logs"></div></div>
+        <div class="section" id="friendsec" hidden></div>
+      </div>
+    </div>`;
+
+  // side panel
+  const side = $("#side");
+  const get = () => entry(s);
+  side.innerHTML = `
+    <div><label class="l">Status</label><div class="seg">${Object.entries(STATUS).map(([k, l]) => `<button data-s="${k}" class="${e?.status === k ? "on" : ""}">${l}</button>`).join("")}</div></div>
+    <div><label class="l">Your rating</label><div class="row" id="rate"><span></span><button class="likebtn ${e?.liked ? "on" : ""}" id="like" aria-label="Like">♥</button></div></div>
+    <div><label class="l" for="review">Review</label><textarea id="review" placeholder="What did you think?">${esc(e?.review || "")}</textarea></div>
+    <label class="check"><input type="checkbox" id="priv" ${e?.private ? "checked" : ""}> Hide this show from friends</label>
+    <hr style="border:0;border-top:1px solid var(--line);margin:0">
+    <form class="log-form" id="logf">
+      <label class="l" style="margin:0">Log a watch</label>
+      <div class="two"><input type="date" id="ldate" value="${today()}" required>
+        <select id="lseason"><option value="">Full series</option>${seasons.map(x => `<option value="${x.number}">Season ${x.number}</option>`).join("")}</select></div>
+      <div id="lrate"></div>
+      <textarea id="lreview" placeholder="Notes for this watch (optional)" style="min-height:60px"></textarea>
+      <div class="row" style="gap:16px"><label class="check"><input type="checkbox" id="lrewatch"> Rewatch</label><label class="check"><input type="checkbox" id="lpriv"> Private</label></div>
+      <button class="btn primary" type="submit">Add to diary</button>
+    </form>`;
+
+  side.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
+    const x = get();
+    x.status = x.status === b.dataset.s ? null : b.dataset.s;
+    side.querySelectorAll(".seg button").forEach(o => o.classList.toggle("on", o.dataset.s === x.status));
+    touch(x);
+  });
+  $("#rate span", side).replaceWith(starInput(e?.rating, v => { const x = get(); x.rating = v; x.ratedAt = new Date().toISOString(); touch(x); }));
+  $("#like").onclick = ev => { const x = get(); x.liked = !x.liked; ev.currentTarget.classList.toggle("on", x.liked); touch(x); };
+  $("#review").onchange = ev => { const x = get(); x.review = ev.target.value.trim(); x.ratedAt = new Date().toISOString(); touch(x); };
+  $("#priv").onchange = ev => { const x = get(); x.private = ev.target.checked || undefined; touch(x); toast(ev.target.checked ? "Friends will not see this show." : "Friends can see this show again."); };
+
+  let logRating = null;
+  $("#lrate").appendChild(starInput(null, v => logRating = v));
+  $("#logf").onsubmit = ev => {
+    ev.preventDefault();
+    const x = get();
+    const season = $("#lseason").value ? +$("#lseason").value : null;
+    const item = { id: uid(), showId: String(id), date: $("#ldate").value, season, rating: logRating, review: $("#lreview").value.trim(), rewatch: $("#lrewatch").checked, ...($("#lpriv").checked ? { private: true } : {}) };
+    const what = `${season ? "Season " + season : "Full series"} on ${new Date(item.date + "T00:00").toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" })}`;
+    if (db.diary.some(d => diaryKey(d) === diaryKey(item))) { toast(`${what} is already in your diary.`); return; }
+    db.diary.push(item);
+    if (season) { x.seasons[season] ||= {}; if (logRating) x.seasons[season].rating = logRating; }
+    else {
+      if (logRating && !x.rating) { x.rating = logRating; x.ratedAt = new Date().toISOString(); }
+      if (!x.status || x.status === "watchlist" || x.status === "watching") x.status = "completed";
+    }
+    if (season && (!x.status || x.status === "watchlist")) x.status = "watching";
+    touch(x);
+    showView(id);
+    toast(`Added to diary: ${what}.`);
+  };
+
+  // seasons and episodes
+  const allEps = airedEps(s);
+  const epsBySeason = {};
+  (s._embedded?.episodes || []).filter(ep => ep.number && ep.season).forEach(ep => (epsBySeason[ep.season] ||= []).push(ep));
+  if (e?.eps) {
+    updateCursor(e, s);
+    // Episodes rated before titles were stored: fill season, number and title in now.
+    let filled = false;
+    for (const ep of allEps) { const r = e.eps[ep.id]; if (r && (r.r || r.c) && !r.s) { r.s = ep.season; r.n = ep.number; r.t = ep.name; filled = true; } }
+    if (filled) save();
+  }
+  loadWhere();
+  loadShowFriends(String(id));
+  const open = new Set(e?.next && !e.next.done ? [e.next.s] : []);
+
+  async function loadWhere() {
+    if (!m.imdb) return;
+    if (!where[id]) {
+      try {
+        const r = await fetch(`/api/episodic/where?imdb=${encodeURIComponent(m.imdb)}&title=${encodeURIComponent(m.name)}`);
+        if (!r.ok) return;
+        where[id] = (await r.json()).offers || [];
+      } catch { return; }
+    }
+    const box = $("#where");
+    if (location.hash !== "#/show/" + id || !box) return;
+    const subs = where[id].filter(o => o.type === "stream" || o.type === "free");
+    const paid = where[id].filter(o => o.type === "rent" || o.type === "buy");
+    const link = o => `<a class="btn" href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.name)}${o.type === "free" ? " (free)" : ""}</a>`;
+    box.innerHTML = `<div class="where"><span class="k">Watch in Türkiye</span>${subs.length ? subs.map(link).join("") : `<span class="sm">Not on a subscription service</span>`}
+      ${paid.length ? `<span class="sm">Rent or buy:</span>${[...new Map(paid.map(o => [o.key, o])).values()].map(link).join("")}` : ""}</div>`;
+    renderNext();
+  }
+
+  function renderNext() {
+    const x = db.shows[id];
+    const box = $("#nextup");
+    if (!allEps.length) { box.innerHTML = ""; return; }
+    const nx = x?.next;
+    if (nx?.done) {
+      box.innerHTML = `<div class="nextup"><span class="k">All caught up</span><span class="ep">${x.epCount.w} of ${x.epCount.t} episodes watched</span></div>`;
+      return;
+    }
+    const ep = nx ? allEps.find(z => z.id === nx.id) : allEps[0];
+    if (!ep) { box.innerHTML = ""; return; }
+    box.innerHTML = `<div class="nextup"><span class="k">${x?.epCount?.w ? "Next up" : "Start with"}</span>
+      <span class="ep"><code>${epCode(ep.season, ep.number)}</code>${esc(ep.name)}</span>
+      <button class="btn primary" id="markNext">Mark watched</button>
+      ${where[id]?.[0] && where[id][0].type !== "rent" && where[id][0].type !== "buy" ? `<a class="btn" href="${esc(where[id][0].url)}" target="_blank" rel="noopener">Watch on ${esc(where[id][0].name)}</a>` : ""}</div>`;
+    $("#markNext").onclick = () => { setWatched(get(), s, [ep], true); open.add(ep.season); rerender(); };
+  }
+
+  function renderSeasons() {
+    const x = db.shows[id];
+    const sw = $("#seasons");
+    sw.innerHTML = "";
+    $("#epsum").textContent = x?.epCount ? `${x.epCount.w}/${x.epCount.t} episodes` : "";
+    if (!seasons.length) { sw.innerHTML = `<div class="empty">TVmaze lists no seasons for this show.</div>`; return; }
+    seasons.forEach(se => {
+      const eps = epsBySeason[se.number] || [];
+      const aired = eps.filter(ep => !ep.airdate || ep.airdate <= today());
+      const w = aired.filter(ep => watched(x, ep)).length;
+      const pr = x?.progress?.[se.number];
+      const ratedEps = eps.map(ep => x?.eps?.[ep.id]?.r).filter(Boolean);
+      const avg = ratedEps.length ? (ratedEps.reduce((a, b) => a + b, 0) / ratedEps.length).toFixed(1) : null;
+      const metaTxt = [year(se.premiereDate), aired.length ? `${w}/${aired.length} watched` : se.episodeOrder ? se.episodeOrder + " eps" : "",
+        avg ? `episodes avg ${avg}★` : "", pr && !w ? `${pr.watched} on Netflix` : ""].filter(Boolean).join(" · ");
+      const row = document.createElement("div");
+      row.className = "season" + (open.has(se.number) ? " open" : "");
+      row.innerHTML = `<div style="min-width:0"><div class="sn"><span class="chev">▶</span>Season ${se.number}${se.name ? " · " + esc(se.name) : ""}</div><div class="sm">${esc(metaTxt)}</div>
+        ${aired.length ? `<div class="bar"><i style="width:${w / aired.length * 100}%"></i></div>` : ""}</div>`;
+      const stars = starInput(x?.seasons?.[se.number]?.rating, v => { const y = get(); y.seasons[se.number] ||= {}; y.seasons[se.number].rating = v; touch(y); }, true);
+      stars.onclick = ev => ev.stopPropagation();
+      row.appendChild(stars);
+      row.onclick = () => { open.has(se.number) ? open.delete(se.number) : open.add(se.number); renderSeasons(); };
+      sw.appendChild(row);
+      if (!open.has(se.number) || !eps.length) return;
+
+      const list = document.createElement("div");
+      list.className = "eplist";
+      eps.forEach(ep => {
+        const rec = x?.eps?.[ep.id];
+        const future = ep.airdate && ep.airdate > today();
+        const r = document.createElement("div");
+        r.className = "ep-row" + (rec?.w ? " w" : "") + (future ? " future" : "");
+        const when = typeof rec?.w === "string" ? `watched ${rec.w}` : rec?.w ? "watched" : "";
+        r.innerHTML = `<button class="tick ${rec?.w ? "on" : ""}" aria-label="${rec?.w ? "Mark unwatched" : "Mark watched"}" ${future ? "disabled" : ""}>✓</button>
+          <span class="num">E${ep.number}</span>
+          <span class="en"><div title="${esc(ep.name)}">${esc(ep.name)}</div><div class="sm">${esc([ep.airdate, ep.runtime ? ep.runtime + " min" : "", when].filter(Boolean).join(" · "))}</div></span>
+          <span></span>
+          ${future ? "<span></span>" : `<button class="btn ghost" title="Mark every earlier episode watched too">Up to here</button>`}
+          ${future ? "<span></span>" : `<button class="btn ghost cmb ${rec?.c ? "on" : ""}" title="${rec?.c ? "Edit comment" : "Comment on this episode"}" aria-label="Comment">✎</button>`}`;
+        if (rec?.c) { const c = document.createElement("div"); c.className = "cm"; c.textContent = rec.c; $(".en", r).appendChild(c); }
+        $(".tick", r).onclick = () => { setWatched(get(), s, [ep], !rec?.w); rerender(); };
+        if (!future) {
+          r.children[3].replaceWith(starInput(rec?.r, v => {
+            const y = get(); y.eps ||= {};
+            const z = y.eps[ep.id] ||= { w: null, r: null };
+            z.r = v;
+            if (v) stampEp(z, ep);
+            if (v && !z.w) { setWatched(y, s, [ep], true); rerender(); return; }
+            if (!v && !z.w && !z.c) delete y.eps[ep.id];
+            touch(y);
+          }, true));
+          $(".cmb", r).onclick = () => {
+            if (r.nextElementSibling?.classList.contains("ep-edit")) { r.nextElementSibling.remove(); return; }
+            const ed = document.createElement("div");
+            ed.className = "ep-edit";
+            ed.innerHTML = `<textarea placeholder="What did you think of ${esc(epCode(ep.season, ep.number))}?"></textarea>
+              <div class="row"><button class="btn ghost">Cancel</button><button class="btn primary">Save</button></div>`;
+            const ta = $("textarea", ed);
+            ta.value = rec?.c || "";
+            ed.querySelector(".btn.ghost").onclick = () => ed.remove();
+            ed.querySelector(".btn.primary").onclick = () => {
+              const y = get(); y.eps ||= {};
+              const z = y.eps[ep.id] ||= { w: null, r: null };
+              const txt = ta.value.trim().slice(0, 2000);
+              if (txt) { z.c = txt; stampEp(z, ep); } else delete z.c;
+              if (txt && !z.w) { setWatched(y, s, [ep], true); rerender(); return; }
+              if (!z.w && !z.r && !z.c) delete y.eps[ep.id];
+              touch(y); rerender();
+            };
+            r.after(ed);
+            ta.focus();
+          };
+          $(".btn.ghost:not(.cmb)", r).onclick = () => {
+            const idx = allEps.findIndex(z => z.id === ep.id);
+            setWatched(get(), s, allEps.slice(0, idx + 1), true, 1);
+            rerender();
+          };
+        }
+        list.appendChild(r);
+      });
+      const acts = document.createElement("div");
+      acts.className = "season-actions";
+      acts.innerHTML = `<button class="btn ghost">Mark season watched</button><button class="btn ghost">Clear season</button>`;
+      acts.children[0].onclick = () => { setWatched(get(), s, aired, true, 1); rerender(); };
+      acts.children[1].onclick = ev => {
+        const b = ev.currentTarget;
+        if (!b.dataset.armed) { b.dataset.armed = 1; b.textContent = "Confirm clear"; b.style.color = "var(--rose)"; return; }
+        setWatched(get(), s, eps, false); rerender();
+      };
+      list.appendChild(acts);
+      sw.appendChild(list);
+    });
+  }
+  function rerender() {
+    renderNext(); renderSeasons();
+    const st = db.shows[id]?.status;
+    side.querySelectorAll(".seg button").forEach(o => o.classList.toggle("on", o.dataset.s === st));
+  }
+  renderNext();
+  renderSeasons();
+
+  // logs
+  const lw = $("#logs");
+  if (!logs.length) lw.innerHTML = `<div class="empty">No watches logged for this show yet.</div>`;
+  logs.forEach(d => {
+    const row = document.createElement("div");
+    row.className = "entry";
+    row.style.gridTemplateColumns = "110px 1fr auto";
+    row.innerHTML = `<span class="sm" style="font-family:var(--mono);color:var(--muted);font-size:13px">${esc(d.date)}</span>
+      <span class="info"><div class="name">${d.season ? "Season " + d.season : "Full series"} ${d.rewatch ? '<span class="tag">rewatch</span>' : ""}</div>${d.review ? `<div style="color:var(--muted);font-size:13px">${esc(d.review)}</div>` : ""}</span>
+      <span class="r"><span class="stars">${starText(d.rating)}</span><button class="btn ghost">Delete</button></span>`;
+    const del = $("button", row);
+    del.onclick = () => {
+      if (del.dataset.armed) { db.diary = db.diary.filter(z => z.id !== d.id); save(); showView(id); }
+      else { del.dataset.armed = 1; del.textContent = "Confirm delete"; del.style.color = "var(--rose)"; setTimeout(() => { delete del.dataset.armed; del.textContent = "Delete"; del.style.color = ""; }, 3000); }
+    };
+    lw.appendChild(row);
+  });
+}
+
+// ---------- friends ----------
+// The Worker only hands out what publicView allows: no private shows or entries, no Ask chats.
+const api = async (path, opts) => {
+  const r = await fetch("/api/episodic/" + path, opts);
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(body.error || r.status), { code: body.error, status: r.status });
+  return body;
+};
+const friendPost = (action, user) => api("friends", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, user }) });
+const userLink = u => `<a class="ulink" href="#/u/${esc(u)}">${esc(u)}</a>`;
+// A show's score for comparisons: the show rating, else the average season rating.
+function score(s) {
+  if (s?.rating) return s.rating;
+  const rs = Object.values(s?.seasons || {}).map(v => v.rating).filter(Boolean);
+  return rs.length ? rs.reduce((a, b) => a + b, 0) / rs.length : null;
+}
+const seen = (s, diary, id) => !!s && (s.status === "watching" || s.status === "completed" || s.status === "dropped" || s.rating || s.epCount?.w || s.progress || diary.some(d => d.showId === id));
+function fcardHTML(s, line) {
+  return `<div class="card"><a href="#/show/${s.id}" tabindex="-1" aria-hidden="true">${posterHTML(s)}</a>
+    <a href="#/show/${s.id}" class="t" title="${esc(s.name)}">${esc(s.name)}</a><div class="m">${line ?? (s.rating ? `<span class="stars">${starText(s.rating)}</span>` : `<span>${years(s)}</span>`)}${s.liked ? '<span class="heart">♥</span>' : ""}</div></div>`;
+}
+function entryHTML(d, shows, who) {
+  const s = shows[d.showId] || { name: "Unknown" };
+  const what = d.ep ? epLabel(d.ep) : d.kind === "rate" ? "Rated the show" : d.season ? "Season " + d.season : "Full series";
+  return `<a class="entry" href="#/show/${d.showId}"><span class="day">${+d.date.slice(8)}</span>
+    <span class="thumb">${s.image ? `<img src="${esc(s.image)}" alt="" loading="lazy">` : ""}</span>
+    <span class="info"><div class="name">${who ? `<b class="who-tag">${esc(who)}</b> ` : ""}${esc(s.name)} <span>${esc(what)}</span>${d.private ? ' <span class="tag">private</span>' : ""}</div>${d.review ? `<div class="note">${esc(d.review)}</div>` : ""}</span>
+    <span class="r">${d.rewatch ? '<span class="tag">rewatch</span>' : ""}${d.liked ? '<span class="heart">♥</span>' : ""}<span class="stars">${starText(d.rating)}</span></span></a>`;
+}
+function monthsHTML(list, shows, whoOf) {
+  const months = {};
+  list.forEach(d => (months[d.date.slice(0, 7)] ||= []).push(d));
+  return Object.entries(months).map(([m, ds]) => {
+    const dt = new Date(m + "-01T00:00");
+    return `<div class="month"><div class="month-label"><b>${dt.toLocaleString("en", { month: "short" })}</b>${dt.getFullYear()}</div><div class="entries">${ds.map(d => entryHTML(d, shows, whoOf?.(d))).join("")}</div></div>`;
+  }).join("");
+}
+
+async function friendsView() {
+  const app = $("#app");
+  app.innerHTML = `<div class="empty">Loading…</div>`;
+  let l, feed;
+  try { [l, feed] = await Promise.all([api("friends"), api("feed")]); }
+  catch { app.innerHTML = `<div class="empty"><strong>Could not load friends</strong>Reload to try again.</div>`; return; }
+  if (location.hash !== "#/friends") return;
+  const req = (u, btns) => `<div class="frow">${userLink(u)}<span class="row" style="gap:6px">${btns.map(([a, t, cls]) => `<button class="btn ${cls || "ghost"}" data-fa="${a}" data-u="${esc(u)}">${t}</button>`).join("")}</span></div>`;
+  app.innerHTML = `<div class="cols friends">
+    <aside class="panel">
+      <form id="addf" class="log-form"><label class="l" for="fname" style="margin:0">Add a friend</label>
+        <input id="fname" style="background:var(--raised);border:1px solid var(--line);border-radius:6px;padding:8px 10px" placeholder="Their username" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+        <button class="btn primary">Send request</button><div class="sm" id="fmsg"></div></form>
+      ${l.in.length ? `<div><label class="l">Requests</label>${l.in.map(u => req(u, [["accept", "Accept", "primary"], ["decline", "Decline"]])).join("")}</div>` : ""}
+      <div><label class="l">Friends · ${l.friends.length}</label>${l.friends.length ? l.friends.map(u => `<div class="frow">${userLink(u)}</div>`).join("") : `<div class="sm">No friends yet. Ask for their username and send a request.</div>`}</div>
+      ${l.out.length ? `<div><label class="l">Sent</label>${l.out.map(u => req(u, [["cancel", "Cancel"]])).join("")}</div>` : ""}
+      <a class="btn" href="#/u/${esc(me)}">Your profile</a>
+    </aside>
+    <div style="min-width:0"><h2><span>Friends' activity</span><span>${feed.events.length || ""}</span></h2>
+      ${feed.events.length ? monthsHTML(feed.events.map(e => e.kind === "ep" ? { ...e, ep: e.ep } : e), feed.shows, e => e.user) : `<div class="empty">${l.friends.length ? "Your friends have not logged anything yet." : "When friends log shows, rate episodes or write reviews, it shows up here."}</div>`}
+    </div></div>`;
+  app.querySelectorAll("[data-fa]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { await friendPost(b.dataset.fa, b.dataset.u); } catch { toast("That did not work. Try again."); }
+    friendsView();
+  });
+  $("#addf").onsubmit = async ev => {
+    ev.preventDefault();
+    const u = $("#fname").value.trim().toLowerCase();
+    try {
+      const r = await friendPost("request", u);
+      toast(r.state === "friends" ? `You and ${u} are now friends.` : `Request sent to ${u}.`);
+      friendsView();
+    } catch (e) {
+      $("#fmsg").textContent = e.code === "no_user" ? "No account with that username." : e.code === "user" ? "That is not a valid username." : "Could not send the request.";
+    }
+  };
+}
+
+async function profileView(u) {
+  const app = $("#app");
+  app.innerHTML = `<div class="empty">Loading…</div>`;
+  let p;
+  try { p = await api("profile?u=" + encodeURIComponent(u)); }
+  catch (e) { app.innerHTML = `<div class="empty"><strong>${e.status === 403 ? "Not friends yet" : "Could not load this profile"}</strong>${e.status === 403 ? `Send ${esc(u)} a request from the <a href="#/friends">Friends</a> page.` : "Reload to try again."}</div>`; return; }
+  if (location.hash !== "#/u/" + u) return;
+  const mine = u === me;
+  const { shows, diary } = p.data;
+  const list = Object.values(shows);
+  const epsW = list.reduce((a, s) => a + (s.epCount?.w || 0), 0);
+  const tiles = [[list.filter(s => s.status === "completed").length, "Completed"], [list.filter(s => s.rating).length, "Rated"], [epsW, "Episodes"], [p.friends, "Friends"]];
+  const watching = list.filter(s => s.status === "watching").sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+  const top = list.filter(s => s.rating).sort((a, b) => b.rating - a.rating || (b.liked ? 1 : 0) - (a.liked ? 1 : 0)).slice(0, 18);
+  const recent = [...diary, ...epEntries(p.data)].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 40);
+
+  let compat = "";
+  if (!mine) {
+    const ids = Object.keys(shows);
+    const common = ids.filter(id => seen(shows[id], diary, id) && seen(db.shows[id], db.diary, id));
+    const both = common.filter(id => score(shows[id]) && score(db.shows[id]));
+    const diff = both.length ? both.reduce((a, id) => a + Math.abs(score(shows[id]) - score(db.shows[id])), 0) / both.length : 0;
+    const match = both.length >= 3 ? Math.round(100 - diff / 4.5 * 100) : null;
+    const loved = (s, id, other, otherDiary) => (score(s) >= 4 || s.liked) && !seen(other[id], otherDiary, id);
+    const theyLoved = ids.filter(id => loved(shows[id], id, db.shows, db.diary)).sort((a, b) => score(shows[b]) - score(shows[a])).slice(0, 12);
+    const youLoved = Object.keys(db.shows).filter(id => !db.shows[id].private && loved(db.shows[id], id, shows, diary)).sort((a, b) => score(db.shows[b]) - score(db.shows[a])).slice(0, 12);
+    const apart = both.filter(id => Math.abs(score(shows[id]) - score(db.shows[id])) >= 1.5).sort((a, b) => Math.abs(score(shows[b]) - score(db.shows[b])) - Math.abs(score(shows[a]) - score(db.shows[a]))).slice(0, 6);
+    const pair = id => `<span>you ${starText(score(db.shows[id])) || "–"}</span><span>${esc(u)} ${starText(score(shows[id])) || "–"}</span>`;
+    compat = `<div class="section"><h2><span>You and ${esc(u)}</span><span>${common.length} shows in common</span></h2>
+      <div class="tiles" style="margin-bottom:20px"><div class="tile"><div class="v">${match === null ? "–" : match + "%"}</div><div class="k">${match === null ? "Rate 3 shared shows to see a match" : `Taste match over ${both.length} rated shows`}</div></div></div>
+      ${common.length ? `<h3 class="sub-h">Both watched</h3><div class="grid">${common.sort((a, b) => (score(shows[b]) || 0) - (score(shows[a]) || 0)).slice(0, 24).map(id => fcardHTML(shows[id], pair(id))).join("")}</div>` : ""}
+      ${apart.length ? `<h3 class="sub-h">Where you disagree</h3><div class="grid">${apart.map(id => fcardHTML(shows[id], pair(id))).join("")}</div>` : ""}
+      ${theyLoved.length ? `<h3 class="sub-h">${esc(u)} loved, you have not seen</h3><div class="grid">${theyLoved.map(id => fcardHTML(shows[id])).join("")}</div>` : ""}
+      ${youLoved.length ? `<h3 class="sub-h">You loved, ${esc(u)} has not seen</h3><div class="grid">${youLoved.map(id => fcardHTML(db.shows[id])).join("")}</div>` : ""}
+    </div>`;
+  }
+
+  app.innerHTML = `<div class="phead"><h1>${esc(u)}</h1>${mine ? `<span class="sm">This is what friends see. Shows and diary entries marked private are left out.</span>` : `<button class="btn ghost" id="unfriend">Remove friend</button>`}</div>
+    <div class="tiles" style="margin-bottom:32px">${tiles.map(([v, k]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("")}</div>
+    ${compat}
+    ${watching.length ? `<div class="section"><h2><span>Watching now</span><span>${watching.length}</span></h2><div class="grid">${watching.slice(0, 18).map(s => fcardHTML(s, s.next && !s.next.done ? `<code>${epCode(s.next.s, s.next.n)}</code><span>next</span>` : undefined)).join("")}</div></div>` : ""}
+    ${top.length ? `<div class="section"><h2><span>Top rated</span><span>${list.filter(s => s.rating).length} rated</span></h2><div class="grid">${top.map(s => fcardHTML(s)).join("")}</div></div>` : ""}
+    <div class="section"><h2><span>Recent diary</span><span></span></h2>${recent.length ? monthsHTML(recent, shows) : `<div class="empty">Nothing logged yet.</div>`}</div>`;
+  const un = $("#unfriend");
+  if (un) un.onclick = async () => {
+    if (!un.dataset.armed) { un.dataset.armed = 1; un.textContent = "Confirm remove"; un.style.color = "var(--rose)"; return; }
+    try { await friendPost("remove", u); location.hash = "#/friends"; } catch { toast("Could not remove. Try again."); }
+  };
+}
+
+// Friends' take on one show, under the seasons on the show page.
+async function loadShowFriends(id) {
+  let r;
+  try { r = await api("showfriends?id=" + encodeURIComponent(id)); } catch { return; }
+  const box = $("#friendsec");
+  if (!box || location.hash !== "#/show/" + id || !r.friends.length) return;
+  box.hidden = false;
+  box.innerHTML = `<h2><span>Friends</span><span>${r.friends.length}</span></h2>` + r.friends.map(({ user, show: s, diary }) => {
+    const seasons = Object.entries(s.seasons || {}).filter(([, v]) => v.rating).map(([n, v]) => `S${n} ${starText(v.rating)}`);
+    const eps = Object.values(s.eps || {}).sort((a, b) => (a.s - b.s) || (a.n - b.n));
+    const bits = [s.status ? STATUS[s.status] : "", s.epCount?.w ? `${s.epCount.w}/${s.epCount.t} episodes` : ""].filter(Boolean);
+    return `<div class="fshow"><div class="fhead">${userLink(user)}<span class="sm">${esc(bits.join(" · "))}</span><span class="stars">${starText(s.rating)}</span>${s.liked ? '<span class="heart">♥</span>' : ""}</div>
+      ${s.review ? `<div class="fbody">${esc(s.review)}</div>` : ""}
+      ${seasons.length ? `<div class="sm">${esc(seasons.join(" · "))}</div>` : ""}
+      ${diary.filter(d => d.review || d.rating).map(d => `<div class="fep"><code>${esc(d.date)}</code><span>${d.season ? "Season " + d.season : "Full series"}</span><span class="stars">${starText(d.rating)}</span>${d.review ? `<div class="fbody">${esc(d.review)}</div>` : ""}</div>`).join("")}
+      ${eps.map(e => `<div class="fep"><code>${esc(epCode(e.s, e.n))}</code><span>${esc(e.t || "")}</span><span class="stars">${starText(e.r)}</span>${e.c ? `<div class="fbody">${esc(e.c)}</div>` : ""}</div>`).join("")}
+    </div>`;
+  }).join("");
+}
+
+// ---------- router ----------
+function route() {
+  const h = location.hash.replace(/^#\/?/, "");
+  const [r, arg] = [h.split("/")[0], decodeURIComponent(h.split("/").slice(1).join("/"))];
+  const tab = { "": "diary", year: "diary", popular: "shows" }[r] ?? r;
+  document.querySelectorAll("#nav a").forEach(a => a.classList.toggle("on", a.dataset.r === tab));
+  window.scrollTo(0, 0);
+  if (r === "show") return showView(arg);
+  if (r === "search") { $("#q").value = arg; return searchView(arg); }
+  if (r === "import") return importView();
+  if (r === "popular") return popularView(arg);
+  if (r === "ask") return askView();
+  if (r === "friends") return friendsView();
+  if (r === "u") return profileView(arg);
+  if (r === "year") { $("#app").innerHTML = views.diary(arg); return; }
+  const v = views[r || "diary"] || views.diary;
+  $("#app").innerHTML = v();
+  if (r === "shows") {
+    $("#sort").onchange = ev => { sessionStorage.setItem("sort", ev.target.value); route(); };
+    $("#filt").onchange = ev => { sessionStorage.setItem("filt", ev.target.value); route(); };
+  }
+}
+
+let qTimer;
+$("#q").addEventListener("input", ev => {
+  clearTimeout(qTimer);
+  const q = ev.target.value.trim();
+  if (q.length < 2) return;
+  qTimer = setTimeout(() => location.hash = "#/search/" + encodeURIComponent(q), 350);
+});
+$("#q").addEventListener("keydown", ev => { if (ev.key === "Enter" && ev.target.value.trim()) { clearTimeout(qTimer); location.hash = "#/search/" + encodeURIComponent(ev.target.value.trim()); } });
+document.addEventListener("keydown", ev => { if (ev.key === "/" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") { ev.preventDefault(); $("#q").focus(); } });
+
+function setChrome(on) {
+  $("#nav").hidden = $(".search").hidden = $("#who").hidden = !on;
+}
+
+function showLogin(msg = "", mode = "login") {
+  loaded = false;
+  setChrome(false);
+  const su = mode === "signup";
+  $("#app").innerHTML = `<form class="login" id="loginf"><h1>Episodic</h1><p>A diary for the series you watch.</p>
+    <div class="tabs"><button type="button" data-m="login" class="${su ? "" : "on"}">Sign in</button><button type="button" data-m="signup" class="${su ? "on" : ""}">Create account</button></div>
+    <input id="user" placeholder="Username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+    <input type="password" id="pass" placeholder="Password" autocomplete="${su ? "new-password" : "current-password"}" required>
+    ${su ? `<input id="invite" placeholder="Invite code" autocomplete="off" required><div class="hint">3 to 20 characters for the username: lowercase letters, digits, underscore. Password at least 8 characters. Ask the administrator for the invite code.</div>` : ""}
+    <button class="btn primary" type="submit">${su ? "Create account" : "Sign in"}</button><div class="err" id="err">${esc(msg)}</div></form>`;
+  $("#loginf").querySelectorAll(".tabs button").forEach(b => b.onclick = () => showLogin("", b.dataset.m));
+  $("#loginf").onsubmit = async ev => {
+    ev.preventDefault();
+    const body = { user: $("#user").value.trim().toLowerCase(), pass: $("#pass").value, invite: su ? $("#invite").value : undefined };
+    let r;
+    try { r = await fetch(`/api/episodic/${su ? "signup" : "login"}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); }
+    catch { $("#err").textContent = "Could not reach the server. Check your connection."; return; }
+    if (r.ok) return boot();
+    const code = (await r.json().catch(() => ({}))).error;
+    $("#err").textContent = {
+      rate: "Too many tries. Wait an hour and try again.",
+      login: "Wrong username or password.",
+      invite: "That invite code is not valid.",
+      username: "Username must be 3 to 20 characters: lowercase letters, digits or underscore.",
+      password: "Password must be at least 8 characters.",
+      taken: "That username is taken. Pick another one.",
+    }[code] || "Sign-in is not available right now.";
+  };
+}
+
+async function boot() {
+  let r;
+  try { r = await fetch(DATA_URL); } catch { $("#app").innerHTML = `<div class="empty"><strong>Offline</strong>Could not reach the server. Reload when you are back online.</div>`; return; }
+  if (r.status === 401) return showLogin();
+  if (!r.ok) { $("#app").innerHTML = `<div class="empty"><strong>Could not load your diary</strong>The server returned ${r.status}. Reload to try again.</div>`; return; }
+  const res = await r.json();
+  db = res.data;
+  db.shows ||= {}; db.diary ||= [];
+  const before = db.diary.length;
+  const seen = new Set();
+  db.diary = db.diary.filter(d => { const k = diaryKey(d); return !seen.has(k) && seen.add(k); });
+  const removed = before - db.diary.length;
+  $("#uname").textContent = me = res.user;
+  loaded = true;
+  setChrome(true);
+  route();
+  if (removed) { save(); toast(`Removed ${removed} duplicate diary ${removed === 1 ? "entry" : "entries"}.`); }
+}
+
+// ---------- Netflix import ----------
+function parseCSV(text) {
+  const rows = []; let row = [], f = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(f); f = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; }
+    else f += c;
+  }
+  if (f || row.length) { row.push(f); rows.push(row); }
+  return rows.filter(r => r.some(x => x.trim()));
+}
+
+// Netflix writes dates in the account's locale: 10/12/26, 12.10.2026 or 2026-10-12 08:30:00.
+function dateParser(samples) {
+  const slash = samples.filter(d => d.includes("/"));
+  const dayFirst = slash.some(d => +d.split("/")[0] > 12);
+  return d => {
+    d = d.trim();
+    let m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+    m = d.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})$/);
+    if (!m) return null;
+    let [a, b, y] = [+m[1], +m[2], m[3]];
+    const [mo, da] = d.includes(".") || dayFirst ? [b, a] : [a, b];
+    if (y.length === 2) y = "20" + y;
+    return `${y}-${String(mo).padStart(2, "0")}-${String(da).padStart(2, "0")}`;
+  };
+}
+
+const SEASON_RE = /^(?:season|series|part|volume|vol\.|book|chapter|collection|temporada|staffel|saison|sezon)\s*(\d+)|^(\d+)\.\s*sezon|^(limited series|miniseries|mini-series)$/i;
+
+function analyzeNetflix(rows) {
+  const head = rows[0].map(h => h.trim().toLowerCase());
+  const ti = head.indexOf("title");
+  const di = head.indexOf("date") >= 0 ? head.indexOf("date") : head.indexOf("start time");
+  const sup = head.indexOf("supplemental video type");
+  if (ti < 0 || di < 0) return null;
+  const body = rows.slice(1).filter(r => (r[ti] || "").trim() && (sup < 0 || !(r[sup] || "").trim()));
+  const parseDate = dateParser(body.slice(0, 400).map(r => r[di] || ""));
+  // "Dexter: Seeing Red" has no season; treat a two-part title as an episode when its prefix repeats.
+  const prefix = {};
+  body.forEach(r => { const p = r[ti].split(": "); if (p.length === 2) prefix[p[0].trim()] = (prefix[p[0].trim()] || 0) + 1; });
+  const shows = {}; let skipped = 0;
+  for (const r of body) {
+    const parts = r[ti].split(": ").map(x => x.trim());
+    const date = parseDate(r[di] || "");
+    let si = parts.findIndex((p, i) => i > 0 && SEASON_RE.test(p));
+    const loose = si < 0 && parts.length === 2 && prefix[parts[0]] >= 3;
+    if (!date || !parts[0] || (si < 0 && parts.length < 3 && !loose)) { skipped++; continue; }
+    let season = loose ? 0 : 1;
+    if (si >= 0) { const m = parts[si].match(SEASON_RE); season = +(m[1] || m[2] || 1); } else si = 1;
+    const name = parts.slice(0, si).join(": ");
+    const sh = shows[name] ||= { name, seasons: {}, last: date, plays: 0 };
+    const se = sh.seasons[season] ||= { eps: new Map(), last: date };
+    const t = parts.slice(si + 1).join(": ") || r[ti];
+    const d = se.eps.get(t);
+    if (!d) se.eps.set(t, { f: date, l: date });
+    else { if (date < d.f) d.f = date; if (date > d.l) d.l = date; }
+    if (date > se.last) se.last = date;
+    if (date > sh.last) sh.last = date;
+    sh.plays++;
+  }
+  return { shows: Object.values(shows).sort((a, b) => b.last.localeCompare(a.last)), skipped, total: body.length };
+}
+
+let importState = null;
+
+let importMode = "pick";
+const PLATFORMS = { hbo: "HBO Max", disney: "Disney+", prime: "Prime Video", netflix: "Netflix" };
+const modeTabs = () => `<div class="tabs" style="max-width:420px;margin-bottom:20px"><button data-mode="pick" class="${importMode === "pick" ? "on" : ""}">Pick from a platform</button><button data-mode="csv" class="${importMode === "csv" ? "on" : ""}">Netflix history file</button></div>`;
+function bindModeTabs() {
+  document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { importMode = b.dataset.mode; importView(); });
+}
+
+function importView() {
+  const app = $("#app");
+  if (importState?.items) return renderImportPreview();
+  if (importMode === "pick") return pickerView();
+  app.innerHTML = modeTabs() + `<h2><span>Import from Netflix</span></h2>
+    <ol class="steps">
+      <li>On netflix.com, open Account, pick your profile, and go to Viewing activity.</li>
+      <li>Scroll to the bottom and click Download all. You get <code>NetflixViewingHistory.csv</code>.</li>
+      <li>Drop that file here. The full data export's <code>ViewingActivity.csv</code> works too.</li>
+    </ol>
+    <label class="drop" id="drop"><strong>Drop the CSV here or pick it</strong><span style="color:var(--muted)">Nothing is saved until you review the matches and press Import.</span>
+      <input type="file" id="csv" accept=".csv,text/csv"></label>
+    <div id="impmsg"></div>`;
+  bindModeTabs();
+  const handle = async file => {
+    const rows = parseCSV(await file.text());
+    let profileRows = rows;
+    const pi = rows[0]?.map(h => h.trim().toLowerCase()).indexOf("profile name") ?? -1;
+    if (pi >= 0) {
+      const profiles = [...new Set(rows.slice(1).map(r => r[pi]).filter(Boolean))];
+      if (profiles.length > 1) {
+        $("#impmsg").innerHTML = `<p>This file has several profiles. Which one is yours?</p><div class="row">${profiles.map(p => `<button class="btn" data-p="${esc(p)}">${esc(p)}</button>`).join("")}</div>`;
+        $("#impmsg").querySelectorAll("button").forEach(b => b.onclick = () => startMatch([rows[0], ...rows.slice(1).filter(r => r[pi] === b.dataset.p)]));
+        return;
+      }
+    }
+    startMatch(profileRows);
+  };
+  $("#csv").onchange = ev => ev.target.files[0] && handle(ev.target.files[0]);
+  const drop = $("#drop");
+  drop.ondragover = ev => { ev.preventDefault(); drop.classList.add("over"); };
+  drop.ondragleave = () => drop.classList.remove("over");
+  drop.ondrop = ev => { ev.preventDefault(); drop.classList.remove("over"); ev.dataTransfer.files[0] && handle(ev.dataTransfer.files[0]); };
+}
+
+async function startMatch(rows) {
+  const a = rows.length > 1 ? analyzeNetflix(rows) : null;
+  if (!a || !a.shows.length) { $("#impmsg").innerHTML = `<div class="empty"><strong>No series found in that file</strong>Make sure it is the viewing history CSV from Netflix, with Title and Date columns.</div>`; return; }
+  importState = { ...a, items: null };
+  $("#app").innerHTML = `<h2><span>Matching ${a.shows.length} series with TVmaze</span><span id="pc">0/${a.shows.length}</span></h2><div class="prog"><i id="pb"></i></div><p style="color:var(--muted)">Under a second per show, so a large history takes a few minutes. Keep this tab open.</p>`;
+  const items = [];
+  for (let i = 0; i < a.shows.length; i++) {
+    const sh = a.shows[i];
+    items.push(buildItem(sh, await pickShow(sh)));
+    if (!location.hash.startsWith("#/import")) { importState = null; return; }
+    $("#pc").textContent = `${i + 1}/${a.shows.length}`;
+    $("#pb").style.width = (i + 1) / a.shows.length * 100 + "%";
+    await new Promise(res => setTimeout(res, 300));
+  }
+  importState.items = items;
+  renderImportPreview();
+}
+
+const sleep = ms => new Promise(res => setTimeout(res, ms));
+// TVmaze allows about 20 calls per 10 seconds; back off on 429.
+async function tvGet(path) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const r = await fetch(API + path);
+      if (r.status === 429) { await sleep(2500); continue; }
+      await sleep(250);
+      return r.ok ? r.json() : null;
+    } catch { return null; }
+  }
+  return null;
+}
+const fullShow = id => tvGet(`/shows/${id}?embed[]=seasons&embed[]=episodes`);
+
+// Prefer an exact name match. When several shows share the name (Ghosts US and UK),
+// pick the one whose episode titles overlap the viewing history most.
+async function pickShow(sh) {
+  const res = (await tvGet(`/search/shows?q=${encodeURIComponent(sh.name)}`)) || [];
+  if (!res.length) return null;
+  const exact = res.filter(x => normTitle(x.show.name) === normTitle(sh.name)).slice(0, 3);
+  if (exact.length < 2) return fullShow((exact[0] || res[0]).show.id);
+  let best = null, bestScore = -1;
+  for (const c of exact) {
+    const show = await fullShow(c.show.id);
+    const score = show ? matchEpisodes(sh, show, false).length : -1;
+    if (score > bestScore) { best = show; bestScore = score; }
+  }
+  return best;
+}
+
+function buildItem(sh, show) {
+  const tvSeasons = show?._embedded?.seasons?.filter(x => x.number) || [];
+  const seasons = Object.entries(sh.seasons).map(([n, v]) => {
+    const total = +n ? tvSeasons.find(x => x.number === +n)?.episodeOrder || null : null;
+    return { n: +n, watched: v.eps.size, total, last: v.last, done: !!total && v.eps.size >= Math.max(1, Math.ceil(total * 0.8)) };
+  }).sort((a, b) => a.n - b.n);
+  const aired = tvSeasons.filter(x => x.episodeOrder && x.premiereDate && x.premiereDate <= today());
+  const allDone = aired.length > 0 && aired.every(x => seasons.find(s => s.n === x.number)?.done);
+  const days = (Date.now() - new Date(sh.last + "T00:00").getTime()) / 86400000;
+  const status = allDone && show?.status === "Ended" ? "completed" : days <= 60 ? "watching" : allDone ? "completed" : "";
+  return { sh, show, seasons, status, on: !!show, eps: show ? matchEpisodes(sh, show) : [] };
+}
+
+// Netflix episode titles to TVmaze episode ids. Netflix "seasons" (Part 1, Volume 2) do not
+// always line up with TVmaze's, so a title missing from its season is looked up show-wide.
+const normTitle = t => t.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9ğüşıöç]+/g, " ").trim();
+function matchEpisodes(sh, show, byOrder = true) {
+  const all = (show._embedded?.episodes || []).filter(ep => ep.number && ep.season);
+  const byTitle = {};
+  all.forEach(ep => (byTitle[normTitle(ep.name || "")] ||= []).push(ep));
+  const out = new Map();
+  const put = (ep, date) => { if (!out.has(ep.id) || out.get(ep.id) < date) out.set(ep.id, date); };
+  for (const [n, se] of Object.entries(sh.seasons)) {
+    const pool = +n ? all.filter(z => z.season === +n) : all;
+    let hits = 0;
+    for (const [title, d] of se.eps) {
+      const num = title.match(/^(?:episode|ep\.?|bölüm|chapter|capitulo|capítulo|folge)\s*(\d+)$/i) || title.match(/^(\d+)\.\s*bölüm$/i);
+      let ep = null;
+      if (num && +n) ep = pool.find(z => z.number === +num[1]);
+      if (!ep) {
+        const cands = byTitle[normTitle(title)] || [];
+        ep = cands.find(z => z.season === +n) || (cands.length === 1 ? cands[0] : null);
+      }
+      if (ep) { put(ep, d.l); hits++; }
+    }
+    // Titles in another language (Dark is German on TVmaze): assume episodes were watched in order.
+    if (byOrder && hits < se.eps.size / 2 && pool.length) {
+      const ordered = [...se.eps.values()].sort((a, b) => a.f.localeCompare(b.f));
+      ordered.slice(0, pool.length).forEach((d, i) => put(pool[i], d.l));
+    }
+  }
+  return [...out].map(([id, date]) => ({ id, date }));
+}
+
+// ---------- pick from a platform catalog ----------
+const catalogs = {};
+const picker = { platform: "hbo", q: "", limit: 120, sel: new Map(), status: "completed", busy: false };
+
+async function loadCatalog(key) {
+  if (!catalogs[key]) {
+    const r = await fetch(`catalog/tr-${key}.json`);
+    if (!r.ok) throw new Error("catalog " + r.status);
+    catalogs[key] = await r.json();
+  }
+  return catalogs[key];
+}
+
+async function pickerView() {
+  const app = $("#app");
+  app.innerHTML = modeTabs() + `<h2><span>What have you watched?</span><span id="catinfo"></span></h2>
+    <div class="row" style="margin-bottom:16px">
+      <div class="seg" style="display:flex;flex-wrap:wrap">${Object.entries(PLATFORMS).map(([k, l]) => `<button data-p="${k}" class="${picker.platform === k ? "on" : ""}">${l}</button>`).join("")}</div>
+      <input id="catq" type="search" placeholder="Filter this catalog" value="${esc(picker.q)}" style="flex:1 1 200px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 16px">
+    </div>
+    <div id="catgrid"><div class="empty">Loading catalog…</div></div>
+    <div class="imp-bar" id="tray"></div>
+    <p style="color:var(--muted);font-size:12px;margin-top:24px">Series available in Turkey, from TMDB with streaming data by JustWatch. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>`;
+  bindModeTabs();
+  app.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { picker.platform = b.dataset.p; picker.limit = 120; pickerView(); });
+  let qt;
+  $("#catq").oninput = ev => { clearTimeout(qt); qt = setTimeout(() => { picker.q = ev.target.value; picker.limit = 120; renderCatalog(); }, 150); };
+  renderTray();
+  try { await loadCatalog(picker.platform); }
+  catch { $("#catgrid").innerHTML = `<div class="empty"><strong>Could not load the catalog</strong>Reload the page to try again.</div>`; return; }
+  renderCatalog();
+}
+
+function renderCatalog() {
+  const cat = catalogs[picker.platform];
+  if (!cat || !$("#catgrid")) return;
+  const mine = new Set(Object.values(db.shows).map(x => normTitle(x.name)));
+  const q = normTitle(picker.q);
+  const list = q ? cat.shows.filter(x => normTitle(x.n).includes(q) || (x.o && normTitle(x.o).includes(q))) : cat.shows;
+  $("#catinfo").textContent = `${list.length} series · updated ${cat.updated}`;
+  $("#catgrid").innerHTML = `<div class="grid">${list.slice(0, picker.limit).map(x => {
+    const on = picker.sel.has(x.id), have = mine.has(normTitle(x.n));
+    return `<button class="card pick${on ? " on" : ""}" data-id="${x.id}" style="background:none;border:0;padding:0;text-align:left;color:inherit">
+      <div class="poster">${x.p ? `<img src="https://image.tmdb.org/t/p/w185${esc(x.p)}" alt="" loading="lazy">` : `<div class="noimg">${esc(x.n)}</div>`}${on ? '<span class="picked">✓</span>' : ""}</div>
+      <div class="t" title="${esc(x.n)}">${esc(x.n)}</div><div class="m"><span>${esc(x.y || "")}</span>${have ? '<span class="tag">in library</span>' : ""}</div></button>`;
+  }).join("")}</div>${list.length > picker.limit ? `<div style="margin-top:16px"><button class="btn" id="more">Show more (${list.length - picker.limit} left)</button></div>` : ""}`;
+  $("#catgrid").querySelectorAll(".pick").forEach(b => b.onclick = () => {
+    const x = cat.shows.find(z => z.id === +b.dataset.id);
+    picker.sel.has(x.id) ? picker.sel.delete(x.id) : picker.sel.set(x.id, x);
+    const on = picker.sel.has(x.id);
+    b.classList.toggle("on", on);
+    const pst = $(".poster", b), mark = $(".picked", b);
+    if (on && !mark) pst.insertAdjacentHTML("beforeend", '<span class="picked">✓</span>'); else if (!on && mark) mark.remove();
+    renderTray();
+  });
+  const more = $("#more");
+  if (more) more.onclick = () => { picker.limit += 240; renderCatalog(); };
+}
+
+function renderTray() {
+  const tray = $("#tray");
+  if (!tray) return;
+  const n = picker.sel.size;
+  tray.hidden = !n;
+  if (!n) return;
+  tray.innerHTML = `<span><b>${n}</b> selected</span>
+    <select id="pickst" style="width:auto">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${k === picker.status ? " selected" : ""}>${l}</option>`).join("")}</select>
+    <button class="btn primary" id="pickadd">Add to library</button><button class="btn ghost" id="pickclear">Clear selection</button>
+    <span id="pickmsg" style="color:var(--muted);font-size:13px"></span>`;
+  $("#pickst").onchange = ev => picker.status = ev.target.value;
+  $("#pickclear").onclick = () => { picker.sel.clear(); renderCatalog(); renderTray(); };
+  $("#pickadd").onclick = addPicked;
+}
+
+async function addPicked() {
+  if (picker.busy) return;
+  picker.busy = true;
+  const items = [...picker.sel.values()], status = picker.status, missed = [];
+  $("#pickadd").disabled = true;
+  for (let i = 0; i < items.length; i++) {
+    const x = items[i];
+    $("#pickmsg").textContent = `Adding ${i + 1} of ${items.length}: ${x.n}`;
+    const tvId = await resolveTv(x);
+    const show = tvId && await fullShow(tvId);
+    if (!show) { missed.push(x.n); continue; }
+    const e = entry(show);
+    e.status = status;
+    if (status === "completed") {
+      e.eps ||= {};
+      for (const ep of airedEps(show)) { const rec = e.eps[ep.id] ||= { w: null, r: null }; if (!rec.w) rec.w = 1; }
+    }
+    if (e.eps) updateCursor(e, show);
+    e.updatedAt = new Date().toISOString();
+    picker.sel.delete(x.id);
+  }
+  save();
+  picker.busy = false;
+  renderCatalog();
+  renderTray();
+  const added = items.length - missed.length;
+  const msg = `Added ${added} series as ${STATUS[status]}.` + (missed.length ? ` Not found on TVmaze: ${missed.join(", ")}. Try the search bar for those.` : "");
+  $("#pickdone")?.remove();
+  if ($("#pickmsg")) $("#pickmsg").textContent = msg;
+  else $("#tray").insertAdjacentHTML("beforebegin", `<p id="pickdone" style="color:var(--muted)">${esc(msg)}</p>`);
+}
+
+function changeMatch(i) {
+  const x = importState.items[i];
+  const box = $(`.chg-box[data-i="${i}"]`);
+  if (!box.hidden) { box.hidden = true; return; }
+  box.hidden = false;
+  box.innerHTML = `<div class="row" style="padding:8px 12px 12px 76px"><input id="chq${i}" value="${esc(x.sh.name)}" style="flex:1;min-width:0;background:var(--raised);border:1px solid var(--line);border-radius:6px;padding:6px 10px"><span class="hint" style="color:var(--muted);font-size:12px">Enter to search</span></div><div class="imp" style="padding:0 12px 12px 76px"></div>`;
+  const input = $("input", box), out = $(".imp", box);
+  const search = async () => {
+    out.innerHTML = `<span style="color:var(--muted)">Searching…</span>`;
+    const res = (await tvGet(`/search/shows?q=${encodeURIComponent(input.value)}`)) || [];
+    out.innerHTML = res.slice(0, 6).map(r => { const m = meta(r.show); return `<button class="btn" style="text-align:left" data-id="${m.id}">${esc(m.name)} <span style="color:var(--muted)">${years(m)}${m.network ? " · " + esc(m.network) : ""}</span></button>`; }).join("") || `<span style="color:var(--muted)">No results.</span>`;
+    out.querySelectorAll("button").forEach(b => b.onclick = async () => {
+      b.textContent = "Loading…";
+      const show = await fullShow(b.dataset.id);
+      if (!show) { b.textContent = "Could not load. Try again."; return; }
+      importState.items[i] = { ...buildItem(x.sh, show), on: true };
+      renderImportPreview();
+    });
+  };
+  input.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); search(); } };
+  search();
+}
+
+function renderImportPreview() {
+  const { items, skipped } = importState;
+  const matched = items.filter(x => x.show);
+  const opts = s => `<option value="">No status</option>` + Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${k === s ? " selected" : ""}>${l}</option>`).join("");
+  $("#app").innerHTML = `<h2><span>Review import</span><span>${matched.length} matched · ${items.length - matched.length} not found</span></h2>
+    <p style="color:var(--muted);max-width:64ch;margin:0 0 16px">Episodes are matched by title and marked watched on the date Netflix recorded. Seasons where you watched at least 80% of the episodes also go into your diary. Uncheck wrong matches. ${skipped} rows looked like movies or trailers and were left out.</p>
+    <div class="imp" id="imp">${items.map((x, i) => {
+      const m = x.show ? meta(x.show) : null;
+      return `<div class="imp-row${x.on ? "" : " off"}" data-i="${i}">
+        <input type="checkbox" ${x.on ? "checked" : ""} ${x.show ? "" : "disabled"} aria-label="Include ${esc(x.sh.name)}">
+        <span class="thumb">${m?.image ? `<img src="${esc(m.image)}" alt="" loading="lazy">` : ""}</span>
+        <span style="min-width:0"><div class="nm">${m ? esc(m.name) + ` <span>${years(m)}</span>` : esc(x.sh.name) + " <span>no match on TVmaze</span>"}${m && m.name.toLowerCase() !== x.sh.name.toLowerCase() ? ` <span>(Netflix: ${esc(x.sh.name)})</span>` : ""}</div>
+          <div class="ss">${x.eps.length ? x.eps.length + " episodes matched · " : ""}${x.seasons.map(s => s.done ? `<b>S${s.n} ✓</b>` : `${s.n ? "S" + s.n : "season unknown"} ${s.watched}${s.total ? "/" + s.total : " eps"}`).join(" · ")} · last ${x.sh.last}</div></span>
+        <span class="row" style="gap:6px;flex-wrap:nowrap">${x.show ? `<select aria-label="Status">${opts(x.status)}</select>` : ""}<button class="btn ghost chg">${x.show ? "Change" : "Find"}</button></span></div>
+        <div class="chg-box" data-i="${i}" hidden></div>`;
+    }).join("")}</div>
+    <div class="imp-bar"><button class="btn primary" id="doimp">Import</button><button class="btn" id="cancelimp">Start over</button><span id="impcount" style="color:var(--muted)"></span></div>`;
+  const count = () => $("#impcount").textContent = `${items.filter(x => x.on).length} series selected`;
+  $("#imp").querySelectorAll(".imp-row").forEach(row => {
+    const x = items[+row.dataset.i];
+    const cb = $("input", row), sel = $("select", row);
+    cb.onchange = () => { x.on = cb.checked; row.classList.toggle("off", !x.on); count(); };
+    if (sel) sel.onchange = () => x.status = sel.value;
+    $(".chg", row).onclick = () => changeMatch(+row.dataset.i);
+  });
+  count();
+  $("#cancelimp").onclick = () => { importState = null; importView(); };
+  $("#doimp").onclick = () => {
+    let shows = 0, entries = 0;
+    for (const x of items.filter(x => x.on && x.show)) {
+      const e = entry(x.show);
+      const id = String(x.show.id);
+      if (x.status && !e.status) e.status = x.status;
+      e.progress ||= {};
+      e.eps ||= {};
+      for (const m of x.eps) { const rec = e.eps[m.id] ||= { w: null, r: null }; if (!rec.w || rec.w === 1 || rec.w < m.date) rec.w = m.date; }
+      updateCursor(e, x.show);
+      for (const s of x.seasons) {
+        e.progress[s.n] = { watched: s.watched, total: s.total, last: s.last, src: "Netflix" };
+        if (s.done && !db.diary.some(d => d.showId === id && d.season === s.n && d.src === "netflix")) {
+          db.diary.push({ id: uid(), showId: id, date: s.last, season: s.n, rating: null, review: "", rewatch: false, src: "netflix" });
+          entries++;
+        }
+      }
+      e.updatedAt = new Date().toISOString();
+      shows++;
+    }
+    save();
+    importState = null;
+    $("#app").innerHTML = `<div class="empty"><strong>Imported ${shows} series</strong>${entries} finished seasons were added to your diary. You can rate them from each show's page.</div><a class="btn primary" href="#/">Open diary</a>`;
+  };
+}
+
+$("#logout").onclick = async () => { await fetch("/api/episodic/logout", { method: "POST" }); showLogin(); };
+window.addEventListener("hashchange", () => loaded && route());
+boot();
+</script>
+</body>
+</html>

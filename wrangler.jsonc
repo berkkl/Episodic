@@ -1,0 +1,35 @@
+{
+  "name": "episodic",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-07-08",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*",
+      "/"
+    ]
+  },
+  "kv_namespaces": [
+    {
+      "binding": "EPISODIC",
+      "id": "00000000000000000000000000000000"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "EPISODIC_QUOTA",
+        "class_name": "EpisodicQuota"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "episodic-quota-v1",
+      "new_sqlite_classes": [
+        "EpisodicQuota"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# Generate unique random values locally. Never use example values in production.
+EPISODIC_SECRET=
+EPISODIC_INVITE=
+# Optional AI; diary features work without a paid model provider.
+OPENROUTER_API_KEY=
+# ANTHROPIC_API_KEY=
+# Optional catalog generation only, never needed by the browser:
+TMDB_TOKEN=
