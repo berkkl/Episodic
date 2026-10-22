@@ -43,26 +43,25 @@ const Answer = z.object({
       title: z.string(),
       year: z.string(),
       kind: z.enum(["continue", "new", "rewatch"]),
-      imdb: z.string(),
       why: z.string(),
     }),
   ),
 });
 export type AskAnswer = z.infer<typeof Answer>;
 
-const SYSTEM = `You recommend TV series to one person, using their own viewing diary from Episodic, a Letterboxd-style tracker for series. Below come a list of reference shows, then their library.
+const SYSTEM = `You recommend TV series to one person, using their own viewing diary from Episodic, a personal tracker for series. Below come a list of reference shows, then their library.
 
-The reference list holds currently popular, trending and all-time top rated series with genre, real IMDb rating and vote count, size (seasons, episodes, minutes per episode), whether it has ended, which streaming services carry it in Turkey ("TR:"), and a short plot. It is there so you know what is current and have accurate details. It is not a limit: recommend any series you know. Search it for shows that match their taste, and also think beyond it.
+The reference list holds currently popular, trending and all-time top rated series with genre, size (seasons, episodes, minutes per episode), whether it has ended, which streaming services carry it in Turkey ("TR:"), and a short plot. It is there so you know what is current and have accurate details. It is not a limit: recommend any series you know. Search it for shows that match their taste, and also think beyond it.
 
 How to read it: ratings are 0.5 to 5 stars. "eps 12/40" means 12 of 40 aired episodes watched. "next S2E5" is where they left off. Statuses are watchlist, watching, completed, dropped. Shows with only Netflix progress were imported from Netflix history and may lack ratings.
 
 How to answer:
 - Reply in the language the person writes in.
 - Draw "new" picks from every series you know, not only the obvious ones: popular and widely discussed shows, acclaimed classics, recent hits, and lesser-known series. Unless they ask for popular or trending shows, include at least one pick that is not in the reference list.
+- Do not invent or quote third-party rating scores.
 - Judge fit by premise, tone, themes and pacing against the shows they rated highly, finished or liked. In "why", say concretely what the show is about and what connects it to their history, for example which loved show it resembles and how.
 - Weigh ratings, likes, reviews and what they finished over what they dropped. Their own ratings show their taste; treat a 2 or 2.5 as a dislike to steer away from.
-- Use the show's IMDb rating as a quality signal. For shows in the reference list, copy its IMDb rating into "imdb"; for others, give your best estimate as a number like "8.7", or "" if you do not know it.
-- Use the size data when the situation calls for it, and when they name a streaming service, prefer shows the reference list puts on it. Avoid shows rated below about 7.0 unless the personal fit is unusually strong, and then say so.
+- Use the size data when the situation calls for it, and when they name a streaming service, prefer shows the reference list puts on it.
 - Respect the situation they describe. Sick or bored and wanting to binge means easy to follow, many episodes, strong hooks. Short on time means short seasons or limited series.
 - Use kind "continue" for a show already in their library they have not finished, with where they left off in "why". Use "new" for shows not in the library. Use "rewatch" only when they ask for comfort or a rewatch.
 - Never recommend a "new" show that is already in the library, and do not suggest dropped shows unless asked.
@@ -70,10 +69,9 @@ How to answer:
 - "reply" is 1 to 3 short sentences that frame the picks. No lists in "reply"; the picks carry the detail.
 - If they ask something unrelated to watching series, say briefly that you only help with what to watch, and return no picks.`;
 
-type RefShow = { n: string; y: string; g: string; s: number | null; e: number | null; m: number | null; st: string; imdb: string | null; tvdb: number | null; r: number | null; v: number | null; pl: string[]; p: string | null; o: string };
+type RefShow = { n: string; y: string; g: string; s: number | null; e: number | null; m: number | null; st: string; imdb: string | null; tvdb: number | null; pl: string[]; p: string | null; o: string };
 
 const normTitle = (t: string) => t.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
-const votes = (v: number) => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? Math.round(v / 1e3) + "k" : String(v));
 
 // Built by scripts/episodic-catalog.mjs and served as a static file; kept per isolate for an hour.
 let refCache: { at: number; shows: RefShow[]; text: string } | null = null;
@@ -86,7 +84,6 @@ async function loadReference(env: AskEnv): Promise<typeof refCache> {
     const lines = shows.map((c) => [
       `${c.n} (${c.y || "?"})`,
       c.g,
-      c.r ? `IMDb ${c.r} (${votes(c.v || 0)} votes)` : "",
       [c.s && `${c.s} season${c.s > 1 ? "s" : ""}`, c.e && `${c.e} eps`, c.m && `${c.m} min`, c.st && c.st.toLowerCase()].filter(Boolean).join(", "),
       c.pl.length ? `TR: ${c.pl.join(", ")}` : "",
       c.o,
@@ -202,11 +199,11 @@ export async function handleAsk(request: Request, env: AskEnv, user: string): Pr
     });
     if (response.stop_reason === "refusal") return json({ error: "refusal" }, 422);
     if (!response.parsed_output) return json({ error: "no_answer" }, 502);
-    // Picks that are in the reference list get the real IMDb rating, platforms and poster.
+    // Reference matches get metadata from TMDB, without inferred third-party ratings.
     const picks = response.parsed_output.picks.map((pick) => {
       const same = ref?.shows.filter((c) => normTitle(c.n) === normTitle(pick.title)) || [];
       const c = same.find((x) => x.y === pick.year) || same[0];
-      return c ? { ...pick, imdbRating: c.r, platforms: c.pl, poster: c.p, imdbId: c.imdb, tvdb: c.tvdb } : pick;
+      return c ? { ...pick, platforms: c.pl, poster: c.p, imdbId: c.imdb, tvdb: c.tvdb } : pick;
     });
     return json({ reply: response.parsed_output.reply, picks, left });
   } catch (err) {

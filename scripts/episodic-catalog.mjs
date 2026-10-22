@@ -5,8 +5,8 @@
 // picks on TVmaze, by TVDB or IMDb id.
 //
 // And public/episodic/catalog/ai-pool.json: reference shows for the Ask tab (popular
-// lists, more genre pages, all-time top rated), each with plot, size, IMDb rating from
-// IMDb's public ratings dataset (personal, non-commercial use), and Turkish platforms.
+// lists, more genre pages, all-time top rated), each with plot, size and regional
+// platforms from TMDB. IMDb rating datasets are not downloaded or republished.
 // The model sees them as current information, not as the only shows it may suggest.
 //
 //   npm run episodic:catalog            # Turkey, all platforms, plus popular lists
@@ -17,9 +17,6 @@
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { Readable } from "node:stream";
-import { createGunzip } from "node:zlib";
-import { createInterface } from "node:readline";
 
 const REGION = process.env.REGION || "TR";
 const PLATFORMS = { hbo: 1899, disney: 337, prime: 119, netflix: 8 };
@@ -109,16 +106,6 @@ const deeper = (await Promise.all(GENRES.flatMap(([, , genre]) => [3, 4].map((pa
 const poolIds = [...new Set([...lists.flatMap((l) => l.shows.map((s) => s.id)), ...top.map((s) => s.id), ...deeper.map((s) => s.id)])];
 const details = (await pool(poolIds, 10, (id) => tmdb(`/tv/${id}`, { append_to_response: "external_ids" }).catch(() => null))).filter(Boolean);
 
-// IMDb ratings: stream the public dataset and keep only the ids we need.
-const want = new Set(details.map((d) => d.external_ids?.imdb_id).filter(Boolean));
-const imdb = new Map();
-const res = await fetch("https://datasets.imdbws.com/title.ratings.tsv.gz");
-if (!res.ok) throw new Error(`IMDb dataset ${res.status}`);
-for await (const line of createInterface({ input: Readable.fromWeb(res.body).pipe(createGunzip()) })) {
-  const [id, rating, votes] = line.split("\t");
-  if (want.has(id)) imdb.set(id, { r: Number(rating), v: Number(votes) });
-}
-
 const platformsOf = new Map();
 for (const [key, label] of Object.entries({ hbo: "HBO Max", disney: "Disney+", prime: "Prime Video", netflix: "Netflix" })) {
   try {
@@ -128,7 +115,6 @@ for (const [key, label] of Object.entries({ hbo: "HBO Max", disney: "Disney+", p
 }
 
 const candidates = details.map((d) => {
-  const r = imdb.get(d.external_ids?.imdb_id);
   return {
     id: d.id,
     n: d.name,
@@ -140,12 +126,10 @@ const candidates = details.map((d) => {
     st: d.status || "",
     imdb: d.external_ids?.imdb_id || null,
     tvdb: d.external_ids?.tvdb_id || null,
-    r: r?.r ?? null,
-    v: r?.v ?? null,
     pl: platformsOf.get(d.id) || [],
     p: d.poster_path || null,
     o: (d.overview || "").replace(/\s+/g, " ").slice(0, 240),
   };
-}).sort((a, b) => (b.v || 0) - (a.v || 0));
+});
 await writeFile(resolve(dir, "ai-pool.json"), JSON.stringify({ updated: new Date().toISOString().slice(0, 10), region: REGION, shows: candidates }));
-console.log(`ai-pool.json: ${candidates.length} reference shows, ${candidates.filter((c) => c.r).length} with IMDb ratings`);
+console.log(`ai-pool.json: ${candidates.length} reference shows from TMDB`);

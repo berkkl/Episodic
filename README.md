@@ -4,6 +4,16 @@ An invite-only TV diary with episode tracking, ratings, Netflix CSV import, watc
 
 This repository contains a standalone version of the application. It includes no accounts, diaries, passwords, invite codes, API keys, production account identifiers, generated catalogs or private development history. It does not deploy to the author's website.
 
+[Open the hosted app](https://berkkalelioglu.com/episodic/). Signup is invitation-only; the source can also be run locally with your own configuration.
+
+![Episodic watching view using a synthetic demo account](docs/images/watching.jpg)
+
+![Episodic diary view using fictional ratings and notes](docs/images/diary.jpg)
+
+Screenshots use a synthetic account with fictional viewing activity, not a real user's diary. Show metadata and posters are supplied by TVmaze and belong to their respective rightsholders.
+
+A personal hobby project developed with **Claude Code and Codex**, with no expectation of revenue. Episodic is independent and is not affiliated with, endorsed by or sponsored by Letterboxd.
+
 ## Local development
 
 Use Node.js 22:
@@ -26,7 +36,7 @@ The repository distributes no TMDB/IMDb catalog exports. Empty catalog placehold
 npm run catalog
 ```
 
-The script accepts a TMDB v3 key or v4 read token, obtains regional catalogs, and reads IMDb's public ratings dataset. Review each data provider's terms and attribution requirements for your usage. The defaults cover Türkiye. Generated files stay under ignored `public/episodic/catalog/`; do not publish them or user exports with code. JustWatch availability uses an unofficial endpoint and may be unavailable independently of the diary.
+The script accepts a TMDB v3 key or v4 read token, obtains regional catalogs, and obtains show metadata from TMDB. Review each data provider's terms and attribution requirements for your usage. The defaults cover Turkey. Generated files stay under ignored `public/episodic/catalog/`; do not publish them or user exports with code. Show pages link to JustWatch for current availability; they do not call its unofficial GraphQL endpoint. IMDb rating datasets are not collected or republished.
 
 ## Deploy your own instance
 
@@ -39,7 +49,7 @@ The configuration creates a SQLite-backed Durable Object for atomic AI quotas. E
 
 ## AI limits and privacy
 
-Ask requires an authenticated session and reserves each provider attempt before making a request. Limits are 100 attempts per user per UTC day, 300 across the deployment per UTC day, 20 per minute globally and at least ten seconds between attempts for the same user. Counter failures stop AI calls. Failed provider calls still consume quota and automatic SDK retries are disabled. Output is capped at 4,000 tokens; reference/profile context, message history and request-body sizes are bounded.
+Ask requires an authenticated session and reserves each provider attempt before making a request. Limits are 100 attempts per user per UTC day, 100 across the deployment per UTC day, 20 per minute globally and at least ten seconds between attempts for the same user. Counter failures stop AI calls. Failed provider calls still consume quota and automatic SDK retries are disabled. Output is capped at 4,000 tokens; reference/profile context, message history and request-body sizes are bounded.
 
 These are request limits, not a dollar-denominated spending cap. Set a provider-side budget on a dedicated key as well. The login throttle still uses eventually consistent KV and is not a strict distributed limiter. See [security notes](SECURITY.md) for the trust boundaries and remaining limitations.
 
@@ -54,3 +64,14 @@ gitleaks git . --redact --log-opts=--all
 ```
 
 Tests use synthetic users and local storage, including a concurrent-request check against the actual Workers runtime. No production account or paid provider call is needed. CI runs tests, type checks, build and public-file/secret scans. Never add handoffs, agent instructions, user exports, personal paths, real deployment IDs or secrets. Model and third-party data licenses are separate from the code's MIT license.
+
+## Third-party data and credits
+
+The MIT license applies to application code, not to provider data, posters, logos or trademarks. Noncommercial intent does not replace permission or attribution.
+
+- [TVmaze](https://www.tvmaze.com/api) supplies show and episode metadata under CC BY-SA. Credit TVmaze and comply with ShareAlike when redistributing or adapting its data. The interface selects and reformats this metadata.
+- [TMDB](https://developer.themoviedb.org/docs/faq) permits noncommercial API use with attribution and its approved logo. This product uses the TMDB API but is not endorsed or certified by TMDB. The app's credits include that notice and logo.
+- Regional platform catalogs use availability supplied by JustWatch through TMDB. [JustWatch](https://www.justwatch.com/) is credited in the app. Direct provider integrations require their own terms and permission.
+- IMDb's free dataset terms restrict republishing a movie-information database beyond individual personal use. The collector therefore does not download IMDb ratings. External IMDb identifiers received from other providers are only used to match shows.
+
+These source references describe the implemented boundaries; they are not a legal certification of every possible deployment. Obtain appropriate rights before adding datasets, changing distribution or monetizing the app.

@@ -13,7 +13,12 @@ for (const name of names) {
     issues.push(`${name}: private or unreviewed file category`); continue;
   }
   if ((await lstat(name)).isSymbolicLink()) { issues.push(`${name}: symlink`); continue; }
+  if (/\.(png|jpe?g|webp)$/i.test(name)) {
+    if (!['docs/images/watching.jpg', 'docs/images/diary.jpg'].includes(name)) issues.push(`${name}: unreviewed image`);
+    continue;
+  }
   const text = await readFile(name, 'utf8');
+  if (/\.md$/i.test(name) && /[\u00c7\u00e7\u011e\u011f\u0130\u0131\u00d6\u00f6\u015e\u015f\u00dc\u00fc]/.test(text)) issues.push(`${name}: documentation must use English spelling`);
   const personal = new RegExp('/' + 'Users/[^/\\s]+/|[A-Za-z]:\\\\Users\\\\');
   if (personal.test(text)) issues.push(`${name}: personal path`);
 }

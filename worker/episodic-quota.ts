@@ -1,6 +1,6 @@
 /** One transactional counter for all paid Ask calls in this deployment. */
 export const ASK_DAILY_LIMIT = 100;
-const GLOBAL_DAILY_LIMIT = 300;
+const GLOBAL_DAILY_LIMIT = 100;
 const GLOBAL_MINUTE_LIMIT = 20;
 const USER_INTERVAL_MS = 10_000;
 

@@ -36,8 +36,11 @@ test('global burst and daily ceilings hold across users', async () => {
   const storage = store(), q = new EpisodicQuota({ storage });
   const responses = await Promise.all(Array.from({ length: 40 }, (_, i) => q.fetch(req(`user_${i}`))));
   assert.equal(responses.filter(r => r.status === 200).length, 20);
-  const c = await storage.get('counter'); c.total = 300; c.burst = 0; await storage.put('counter', c);
-  assert.equal((await q.fetch(req('fresh_user'))).status, 429);
+  const c = await storage.get('counter'); c.total = 99; c.burst = 0; await storage.put('counter', c);
+  const last = await Promise.all(Array.from({ length: 30 }, (_, i) => q.fetch(req(`last_${i}`))));
+  assert.equal(last.filter(r => r.status === 200).length, 1);
+  assert.equal(last.filter(r => r.status === 429).length, 29);
+  assert.equal((await storage.get('counter')).total, 100);
 });
 test('per-user daily ceiling and UTC reset are independent of global capacity', async () => {
   const storage = store(), q = new EpisodicQuota({ storage });
